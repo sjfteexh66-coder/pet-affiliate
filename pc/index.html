@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>조립PC 견적기 - 예산·용도 맞춤 견적 자동 생성</title>
+  <meta name="description" content="예산과 용도만 고르면 호환성까지 검증된 조립PC 견적을 자동으로 만들어 드립니다. 부품 교체, 예상 프레임, 병목 분석, 견적표 복사까지 한 번에.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/pc.css">
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header>
+  <div class="container nav-inner">
+    <a href="index.html" class="logo">🖥️ 조립PC <span>견적기</span></a>
+    <button class="hamburger" aria-label="메뉴 열기" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav>
+      <ul>
+        <li><a href="#wizard-section">견적 만들기</a></li>
+        <li><a href="#result">내 견적</a></li>
+        <li><a href="#guide">부품 가이드</a></li>
+        <li><a href="#faq">자주 묻는 질문</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="container">
+    <h1>예산만 정하세요.<br><em>견적은 알아서</em> 짜드립니다.</h1>
+    <p>용도와 예산을 고르면 소켓 · 전력 · 크기 호환성까지 검증한 조립PC 견적이 바로 나옵니다.
+       마음에 안 드는 부품은 클릭 한 번으로 바꾸세요.</p>
+    <div class="hero-tags">
+      <span>✅ 호환성 자동 검증</span>
+      <span>⚡ 권장 파워 용량 계산</span>
+      <span>🎮 게임별 예상 프레임</span>
+      <span>📋 견적표 복사 · 공유</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 견적 마법사 ===== -->
+<section id="wizard-section">
+  <div class="container">
+    <div class="section-head">
+      <h2>🛠️ 견적 조건 선택</h2>
+      <p>네 가지만 고르면 됩니다. 평균 30초면 끝납니다.</p>
+    </div>
+
+    <div class="card">
+      <!-- 1. 용도 -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">1</span> 어떤 용도로 쓰시나요?</div>
+        <div class="opt-grid" id="purpose-opts"></div>
+      </div>
+
+      <!-- 2. 예산 -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">2</span> 예산은 얼마인가요?
+          <small>본체 기준 (모니터 · 키보드 · 마우스 제외)</small>
+        </div>
+        <div class="budget-value">
+          <strong id="budget-text">150만원</strong>
+          <span id="budget-sub"></span>
+        </div>
+        <input type="range" id="budget-range" min="500000" max="6000000" step="50000" value="1500000"
+               aria-label="예산 금액">
+        <div class="chip-row budget-presets" id="budget-presets"></div>
+      </div>
+
+      <!-- 3. 해상도 -->
+      <div class="step" id="step-res">
+        <div class="step-label"><span class="step-num">3</span> 어떤 모니터에서 플레이하나요?
+          <small>해상도와 주사율에 따라 CPU · 그래픽카드 비중이 달라집니다</small>
+        </div>
+        <div class="chip-row" id="res-opts"></div>
+      </div>
+
+      <!-- 4. CPU 제조사 -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">4</span> CPU 제조사 선호가 있나요?</div>
+        <div class="chip-row" id="brand-opts"></div>
+      </div>
+
+      <button class="btn btn-primary btn-lg" id="build-btn">🔧 내 견적 만들기</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 견적 결과 ===== -->
+<section id="result">
+  <div class="container">
+    <div class="section-head">
+      <h2>📊 완성된 견적</h2>
+      <p id="result-sub"></p>
+    </div>
+
+    <dl class="summary-grid" id="summary"></dl>
+    <div id="notices"></div>
+
+    <!-- 견적표 -->
+    <div class="card">
+      <div class="section-head">
+        <h2>📋 견적표</h2>
+        <p>[변경] 버튼으로 부품을 직접 바꿀 수 있습니다. 호환되지 않는 부품은 자동으로 함께 조정됩니다.</p>
+      </div>
+      <div class="quote-wrap">
+        <table class="quote-table">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>부품</th>
+              <th class="right">가격</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="quote-body"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">합계</td>
+              <td class="right sum" id="quote-total">-</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost btn-sm" id="copy-btn">📋 견적표 복사</button>
+        <button class="btn btn-ghost btn-sm" id="share-btn">🔗 링크 복사</button>
+        <button class="btn btn-ghost btn-sm" id="print-btn">🖨️ 인쇄 · PDF 저장</button>
+        <button class="btn btn-ghost btn-sm" id="reset-btn">↺ 다시 만들기</button>
+      </div>
+    </div>
+
+    <!-- 호환성 -->
+    <div class="card">
+      <div class="section-head">
+        <h2>🔍 호환성 검사</h2>
+        <p id="checks-sub"></p>
+      </div>
+      <div class="checks checks-collapsed" id="checks"></div>
+      <div class="actions">
+        <button class="btn btn-ghost btn-sm" id="toggle-checks">정상 항목까지 모두 보기</button>
+      </div>
+    </div>
+
+    <!-- 성능 -->
+    <div class="card">
+      <div class="section-head">
+        <h2>📈 예상 성능</h2>
+        <p>선택한 용도 기준으로 평가한 구성 점수와 게임별 예상 프레임입니다.</p>
+      </div>
+      <div id="analysis"></div>
+      <div class="perf-grid">
+        <div>
+          <div class="sub-h">부품별 구성 점수</div>
+          <div id="meters"></div>
+        </div>
+        <div>
+          <div class="sub-h" id="fps-head">게임별 예상 프레임</div>
+          <div id="fps"></div>
+        </div>
+      </div>
+      <p class="hint">
+        ※ 프레임은 부품 등급을 바탕으로 계산한 <strong>추정치</strong>입니다.
+        실제 성능은 게임 버전, 그래픽 옵션, 드라이버, 업스케일링(DLSS · FSR) 사용 여부에 따라 달라집니다.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 부품 가이드 ===== -->
+<section id="guide">
+  <div class="container">
+    <div class="section-head">
+      <h2>📚 부품 고르는 법</h2>
+      <p>견적을 직접 손보기 전에 알아두면 좋은 기준들</p>
+    </div>
+
+    <details class="acc">
+      <summary>예산은 어떤 비율로 나눠야 하나요?</summary>
+      <div class="acc-body">
+        <ul>
+          <li><strong>게임 위주</strong> — 그래픽카드에 전체 예산의 35~45%를 쓰는 것이 가장 효율적입니다. CPU는 15~25% 선에서 그래픽카드와 급을 맞추세요.</li>
+          <li><strong>영상편집 · 3D</strong> — CPU와 메모리 비중을 높입니다. 메모리 32GB 이상, 저장장치 2TB 이상이 작업 효율에 직결됩니다.</li>
+          <li><strong>사무 · 학업</strong> — 내장그래픽이 있는 CPU를 고르면 그래픽카드 비용을 아예 아낄 수 있습니다. 그 돈은 SSD 용량과 메모리에 쓰세요.</li>
+          <li><strong>공통</strong> — 파워와 케이스에서 무리하게 아끼면 소음 · 발열 · 수명에서 손해를 봅니다. 합쳐서 10~15% 정도는 확보하세요.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>CPU, 무엇을 보고 골라야 하나요?</summary>
+      <div class="acc-body">
+        <ul>
+          <li><strong>소켓의 수명</strong> — AM5 · LGA1851은 현재 주력 플랫폼이고, AM4 · LGA1700은 사실상 마지막 세대입니다. 나중에 CPU만 바꿔 쓰려면 최신 소켓이 유리합니다.</li>
+          <li><strong>게임은 X3D</strong> — 라이젠 X3D 모델은 큰 캐시 덕분에 같은 가격대에서 게임 프레임이 눈에 띄게 높습니다. 반대로 인코딩 · 렌더링에는 코어 수가 많은 모델이 낫습니다.</li>
+          <li><strong>내장그래픽 유무</strong> — 이름에 F가 붙은 인텔 CPU와 라이젠 7500F는 내장그래픽이 없어 그래픽카드가 반드시 필요합니다.</li>
+          <li><strong>번들 쿨러</strong> — 65W급 보급형에는 기본 쿨러가 들어 있지만, 120W가 넘는 고성능 CPU는 별도 쿨러를 반드시 사야 합니다.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>그래픽카드는 해상도에 맞춰 고르세요</summary>
+      <div class="acc-body">
+        <ul>
+          <li><strong>FHD 60Hz</strong> — 30~40만원대로 충분합니다. 그 이상은 모니터가 성능을 못 받아냅니다.</li>
+          <li><strong>FHD 144Hz 이상</strong> — 50~70만원대. 경쟁 게임에서 240Hz를 노린다면 그래픽카드보다 CPU가 먼저 한계에 부딪힙니다.</li>
+          <li><strong>QHD 144Hz</strong> — 80~130만원대. VRAM 12GB 이상을 권장합니다.</li>
+          <li><strong>4K</strong> — 130만원 이상. 최신 게임을 높은 옵션으로 돌리려면 VRAM 16GB를 기준으로 보세요.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>메모리와 저장장치 기준</summary>
+      <div class="acc-body">
+        <ul>
+          <li><strong>용량</strong> — 게임 · 사무는 16GB로도 되지만 32GB가 표준입니다. 영상편집 · AI 작업은 64GB 이상에서 체감이 큽니다.</li>
+          <li><strong>규격</strong> — DDR4와 DDR5는 서로 호환되지 않습니다. 메인보드가 지원하는 규격만 꽂힙니다.</li>
+          <li><strong>속도</strong> — 라이젠 7000 · 9000 시리즈는 DDR5 6000MHz CL30 조합이 가장 잘 맞습니다.</li>
+          <li><strong>SSD</strong> — 500GB는 요즘 게임 두세 개면 꽉 찹니다. 1TB를 최소선으로 보고, 게임을 많이 깐다면 2TB를 권합니다.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>파워 · 쿨러 · 케이스에서 실수하는 것들</summary>
+      <div class="acc-body">
+        <ul>
+          <li><strong>파워 용량</strong> — CPU와 그래픽카드 소비전력을 합한 뒤 30% 정도 여유를 두는 것이 안전합니다. 이 사이트는 그 계산을 자동으로 해줍니다.</li>
+          <li><strong>80PLUS 등급</strong> — 브론즈로도 동작에는 문제가 없지만, 고성능 구성에서는 골드 이상 · ATX 3.1 규격이 전원 변동에 안정적입니다.</li>
+          <li><strong>쿨러 높이</strong> — 미니타워에 큰 타워형 공랭을 넣으면 측면 패널이 닫히지 않습니다. 케이스 허용 높이를 꼭 확인하세요.</li>
+          <li><strong>그래픽카드 길이</strong> — 고성능 그래픽카드는 300mm를 넘어갑니다. 작은 케이스에는 물리적으로 들어가지 않습니다.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section id="faq">
+  <div class="container">
+    <div class="section-head">
+      <h2>❓ 자주 묻는 질문</h2>
+    </div>
+
+    <details class="acc">
+      <summary>견적은 어떤 기준으로 만들어지나요?</summary>
+      <div class="acc-body">
+        먼저 선택한 용도의 <strong>최소 요구 조건</strong>(메모리 용량, 저장장치, 그래픽카드 필요 여부)을 만족하는 가장 저렴한 구성을 만듭니다.
+        그다음 남은 예산으로 <strong>1만원당 성능 상승폭이 가장 큰 부품</strong>을 하나씩 올려가며, 더 올릴 수 없을 때까지 반복합니다.
+        이때 CPU와 그래픽카드의 급 차이가 벌어지면 감점을 주어 한쪽에만 예산이 몰리지 않게 조정합니다.
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>가격이 실제 시세와 다릅니다</summary>
+      <div class="acc-body">
+        이 사이트의 가격은 <strong id="faq-price-date">기준 시점의 참고용 추정치</strong>입니다.
+        부품 가격은 환율 · 재고 · 신제품 출시에 따라 수시로 바뀌므로, 구매 전에 실제 판매처에서 최종 가격을 확인하세요.
+        견적의 <strong>구성과 호환성 판단</strong>은 가격이 조금 달라져도 그대로 유효합니다.
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>예상 프레임은 믿을 수 있나요?</summary>
+      <div class="acc-body">
+        부품 등급을 바탕으로 계산한 <strong>대략적인 추정치</strong>입니다. 같은 부품이라도 그래픽 옵션, 게임 패치,
+        업스케일링(DLSS · FSR) 사용 여부에 따라 실제 프레임은 크게 달라집니다.
+        절대적인 수치보다 <strong>구성을 바꿨을 때 프레임이 어느 방향으로 움직이는지</strong>를 보는 용도로 쓰시길 권합니다.
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>예산을 다 쓰지 않고 견적이 나왔습니다</summary>
+      <div class="acc-body">
+        남은 예산으로 올릴 수 있는 부품이 없거나, 다음 등급 부품이 예산을 넘어설 때 그렇게 됩니다.
+        용도에 비해 과한 부품(게임용에 64GB 메모리 등)은 일부러 제외하기 때문에, 남은 금액은
+        모니터 · 키보드 · 마우스에 쓰거나 예산을 조금 올려 다시 계산해 보세요.
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>이 견적으로 조립은 어떻게 하나요?</summary>
+      <div class="acc-body">
+        견적표를 복사해 조립 대행 업체나 컴퓨터 판매점에 그대로 전달하면 됩니다.
+        직접 조립한다면 부품별 호환성은 이미 검증되어 있으니, 조립 순서 안내 영상만 참고하면 충분합니다.
+        <strong>조립 비용은 견적에 포함되어 있지 않습니다</strong>(보통 3~5만원 선).
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="container">
+    <div class="foot-logo">🖥️ 조립PC 견적기</div>
+    <p>예산과 용도에 맞는 조립PC 구성을 자동으로 계산해 드리는 도구입니다.<br>
+       부품 데이터베이스는 주요 유통 제품을 기준으로 구성했습니다.</p>
+    <p class="disclaimer">
+      <strong>안내</strong> — 표시 가격은 <span id="price-date-note">참고용 추정치</span>이며 실제 구매가와 다를 수 있습니다.
+      예상 프레임 · 소비전력 역시 부품 등급을 기반으로 한 계산값입니다. 구매 전 실제 판매처에서 가격과 재고를 확인하세요.<br>
+      이 사이트는 특정 판매처나 제조사와 제휴 관계가 없으며, 부품 판매를 중개하지 않습니다.
+    </p>
+  </div>
+</footer>
+
+<!-- ===== 부품 교체 모달 ===== -->
+<dialog id="swap-dialog">
+  <div class="dlg-head">
+    <div>
+      <h3 id="dlg-title">부품 변경</h3>
+      <p id="dlg-desc"></p>
+    </div>
+    <button class="dlg-close" id="dlg-close" aria-label="닫기">&times;</button>
+  </div>
+  <div class="dlg-body" id="dlg-body"></div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/parts-data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
