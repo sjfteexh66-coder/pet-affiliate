@@ -299,7 +299,7 @@ function quoteText() {
     ' ' + padTo('합계', 11) + padTo('', 30) + won(total),
     ` 예상 최대 소비전력 ${pw.peak}W · 권장 파워 ${pw.recommended}W`,
     line,
-    ` ※ 가격은 ${PRICE_BASE_DATE} 기준 참고용 추정치입니다.`,
+    ` ※ 가격은 ${PRICE_INFO.note}입니다.`,
     ' ※ 조립 비용은 포함되어 있지 않습니다.'
   ].join('\n');
 }
@@ -352,9 +352,11 @@ function loadInitial() {
 
 /* ===== 이벤트 연결 ===== */
 document.addEventListener('DOMContentLoaded', () => {
-  // 가격 기준 시점 표기
-  el('price-date-note').textContent = `${PRICE_BASE_DATE} 기준 참고용 추정치`;
-  el('faq-price-date').textContent = `${PRICE_BASE_DATE} 기준 참고용 추정치`;
+  // 가격 기준 표기 (자동 수집된 가격이 있으면 수집 시점 · 출처를 보여준다)
+  el('price-date-note').textContent = PRICE_INFO.note;
+  el('faq-price-date').textContent = PRICE_INFO.note;
+  el('price-basis').textContent =
+    `가격 기준: ${PRICE_INFO.note} · 조립 비용은 포함되어 있지 않습니다.`;
 
   renderWizard();
 

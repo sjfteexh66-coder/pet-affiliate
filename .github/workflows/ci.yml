@@ -1,0 +1,28 @@
+name: 테스트
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 가격 선정 로직 테스트
+        run: node --test scripts/price-pick.test.mjs
+
+      - name: 사이트 스크립트 문법 검사
+        run: |
+          for f in pc/js/*.js; do
+            node --check "$f"
+          done
+
+      - name: 부품과 검색 설정이 어긋나지 않았는지 확인
+        run: node scripts/check-coverage.mjs

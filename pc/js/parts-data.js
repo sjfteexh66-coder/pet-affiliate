@@ -4,7 +4,7 @@
  * score : 같은 카테고리 안에서만 의미가 있는 상대 성능/등급 지수 (0~100+).
  * CPU만 gameScore(게임) / workScore(다중작업) 두 축으로 평가한다.
  */
-const PRICE_BASE_DATE = '2026년 9월';
+const PRICE_BASE_DATE = '2026년 9월';   // 자동 수집 전까지 쓰이는 추정 가격의 기준 시점
 
 const PARTS = {
 
@@ -132,3 +132,22 @@ const GAMES = [
   { id:'cp2077', name:'사이버펑크 2077',  preset:'울트라(RT 끔)', base:{ fhd60:135, fhd144:135, fhd240:135, qhd144:95, uhd:50 }, cpuCap:190 },
   { id:'wukong', name:'검은 신화: 오공',  preset:'높음',      base:{ fhd60:110, fhd144:110, fhd240:110, qhd144:80, uhd:45 }, cpuCap:170 }
 ];
+
+/* ===== 자동 수집된 가격 적용 =====
+ * prices.js 를 parts-data.js 보다 먼저 로드하면, 수집된 가격이 위의 추정 가격을 덮어쓴다.
+ * 수집 결과가 없으면(파일이 없거나 items 가 비어 있으면) 추정 가격을 그대로 쓴다.
+ */
+const PRICE_INFO = (function () {
+  const live = typeof PRICE_OVERRIDES !== 'undefined' ? PRICE_OVERRIDES : null;
+  const items = (live && live.items) || {};
+  if (!Object.keys(items).length) {
+    return { live:false, note:PRICE_BASE_DATE + ' 기준 참고용 추정치' };
+  }
+  Object.keys(PARTS).forEach(function (key) {
+    PARTS[key].forEach(function (part) {
+      const price = items[part.id];
+      if (typeof price === 'number' && price >= 0) part.price = price;
+    });
+  });
+  return { live:true, note:live.updated + ' 수집된 ' + live.source };
+})();
