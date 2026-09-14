@@ -2,7 +2,7 @@
  * parts-data.js → engine.js → app.js 순서로 로드된다.
  */
 
-const BUDGET_PRESETS = [600000, 800000, 1000000, 1500000, 2000000, 3000000, 4000000];
+const BUDGET_PRESETS = [1000000, 1500000, 2000000, 3000000, 5000000, 8000000, 12000000];
 const BRANDS = [
   { id:'any',   label:'상관없음', sub:'가성비 우선' },
   { id:'amd',   label:'AMD',     sub:'라이젠' },
@@ -12,7 +12,7 @@ const STORE_KEY = 'pc-quote-state';
 
 const state = {
   purpose: 'game',
-  budget: 1500000,
+  budget: 2000000,
   res: 'qhd144',
   brand: 'any',
   build: null,
@@ -329,7 +329,7 @@ function restore(data) {
   if (PURPOSES.some(p => p.id === data.p)) state.purpose = data.p;
   if (RESOLUTIONS.some(r => r.id === data.r)) state.res = data.r;
   if (BRANDS.some(x => x.id === data.m)) state.brand = data.m;
-  if (Number.isFinite(data.b)) state.budget = Math.min(6000000, Math.max(500000, data.b));
+  if (Number.isFinite(data.b)) state.budget = Math.min(14000000, Math.max(1000000, data.b));
   state.build = build;
   state.minPrice = 0;
   state.overBudget = false;

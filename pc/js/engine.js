@@ -18,7 +18,7 @@ const PURPOSES = [
     weights:{ cpu:20, gpu:46, ram:8, storage:7, board:7, psu:6, case:3, cooler:3 },
     min:{ ram:16, storage:500, dgpu:true },
     sweet:{ ram:32, storage:2000 },
-    share:{ cpu:0.42, gpu:0.62, board:0.20, ram:0.16, storage:0.16, psu:0.13, case:0.10, cooler:0.11 }
+    share:{ cpu:0.42, gpu:0.75, board:0.20, ram:0.40, storage:0.16, psu:0.13, case:0.10, cooler:0.11 }
   },
   {
     id:'office', label:'사무 · 학업', icon:'💼', desc:'문서 · 웹 · 인터넷 강의',
@@ -26,7 +26,7 @@ const PURPOSES = [
     weights:{ cpu:30, gpu:3, ram:16, storage:22, board:10, psu:7, case:5, cooler:4 },
     min:{ ram:16, storage:500, dgpu:false },
     sweet:{ ram:32, storage:1000 },
-    share:{ cpu:0.45, gpu:0.12, board:0.22, ram:0.20, storage:0.28, psu:0.15, case:0.14, cooler:0.12 }
+    share:{ cpu:0.45, gpu:0.12, board:0.22, ram:0.45, storage:0.28, psu:0.15, case:0.14, cooler:0.12 }
   },
   {
     id:'creator', label:'영상편집 · 디자인', icon:'🎬', desc:'프리미어 · 포토샵 · 3D',
@@ -34,7 +34,7 @@ const PURPOSES = [
     weights:{ cpu:28, gpu:22, ram:18, storage:16, board:7, psu:4, case:2, cooler:3 },
     min:{ ram:32, storage:1000, dgpu:true },
     sweet:{ ram:64, storage:4000 },
-    share:{ cpu:0.45, gpu:0.45, board:0.18, ram:0.30, storage:0.26, psu:0.12, case:0.09, cooler:0.12 }
+    share:{ cpu:0.45, gpu:0.55, board:0.18, ram:0.50, storage:0.26, psu:0.12, case:0.09, cooler:0.12 }
   },
   {
     id:'stream', label:'게임방송 · 스트리밍', icon:'📡', desc:'게임 + 인코딩 동시 처리',
@@ -42,7 +42,7 @@ const PURPOSES = [
     weights:{ cpu:26, gpu:34, ram:14, storage:9, board:7, psu:5, case:2, cooler:3 },
     min:{ ram:32, storage:1000, dgpu:true },
     sweet:{ ram:32, storage:2000 },
-    share:{ cpu:0.42, gpu:0.55, board:0.20, ram:0.24, storage:0.20, psu:0.13, case:0.10, cooler:0.12 }
+    share:{ cpu:0.42, gpu:0.68, board:0.20, ram:0.45, storage:0.20, psu:0.13, case:0.10, cooler:0.12 }
   },
   {
     id:'ai', label:'AI · 딥러닝', icon:'🤖', desc:'로컬 LLM · 이미지 생성',
@@ -50,7 +50,7 @@ const PURPOSES = [
     weights:{ cpu:16, gpu:46, ram:16, storage:12, board:4, psu:3, case:1, cooler:2 },
     min:{ ram:32, storage:1000, dgpu:true, vram:12 },
     sweet:{ ram:96, storage:4000 },
-    share:{ cpu:0.18, gpu:0.70, board:0.12, ram:0.22, storage:0.14, psu:0.14, case:0.08, cooler:0.10 }
+    share:{ cpu:0.18, gpu:0.80, board:0.12, ram:0.45, storage:0.14, psu:0.14, case:0.08, cooler:0.10 }
   }
 ];
 
@@ -223,15 +223,31 @@ const Engine = (function () {
     return w;
   }
 
-  /* CPU와 그래픽카드의 급 차이에 대한 감점.
-   * 탐색이 프레임에 유리한 한쪽(주로 그래픽카드)에만 예산을 몰아주는 것을 막는다.
-   * 0.7 ~ 1.2 구간을 "짝이 맞는" 범위로 보고, 벗어난 만큼 감점한다.
+  /* CPU와 그래픽카드의 짝이 맞는지를 예상 프레임으로 직접 잰다.
+   * waste  : 그래픽카드는 낼 수 있는데 CPU가 못 따라가 버려지는 프레임의 비율
+   * spare  : 반대로 CPU만 남아도는 비율 (그래픽카드에 더 썼어야 하는 구성)
+   * 점수 지표를 따로 만들지 않고 실제 프레임 모델을 쓰므로,
+   * 화면에 보여주는 병목 안내와 내부 탐색이 같은 기준으로 움직인다.
    */
+  function frameBalance(build, resId) {
+    let gpuTotal = 0, cpuTotal = 0, wasted = 0;
+    GAMES.forEach(g => {
+      const gpuFps = g.base[resId] * build.gpu.score / 100;
+      const cpuFps = g.cpuCap * build.cpu.gameScore / 100;
+      gpuTotal += gpuFps;
+      cpuTotal += cpuFps;
+      wasted += Math.max(0, gpuFps - cpuFps);
+    });
+    return {
+      waste: gpuTotal ? wasted / gpuTotal : 0,
+      spare: cpuTotal ? Math.max(0, cpuTotal - gpuTotal) / cpuTotal : 0
+    };
+  }
+
+  /* 한쪽에만 예산을 몰아준 구성을 감점해 탐색이 균형을 잡도록 한다 */
   function balancePenalty(build, purpose, opts) {
     if (!purpose.useRes || build.gpu.needsIgpu) return 0;
-    const ratio = build.gpu.score / (build.cpu.gameScore * 1.6) / resolutionOf(opts.res).bnMul;
-    const dev = Math.max(0, ratio - 1.2) + Math.max(0, 0.7 - ratio);
-    return dev * 900;
+    return frameBalance(build, opts.res).waste * 5000;
   }
 
   function rawScore(build, purpose, opts) {
@@ -451,12 +467,13 @@ const Engine = (function () {
       return { level:'ok', label:'균형 잡힌 작업용 구성', detail:'CPU와 그래픽카드 성능이 고르게 맞춰져 있습니다.' };
     }
 
-    // 게임 · 방송 용도는 해상도까지 감안해 병목을 판정한다
+    // 게임 · 방송 용도는 실제 예상 프레임에서 손해 보는 정도로 판정한다
     const res = resolutionOf(opts.res);
-    const ratio = build.gpu.score / (build.cpu.gameScore * 1.6) / res.bnMul;
-    if (ratio > 1.35) return { level:'warn', label:'CPU 병목 가능성',
-      detail:`그래픽카드에 비해 CPU가 약합니다. ${res.label} 환경에서는 CPU를 한 단계 올리면 체감이 큽니다.` };
-    if (ratio < 0.6) return { level:'warn', label:'그래픽카드 여유 부족',
+    const bal = frameBalance(build, opts.res);
+    if (bal.waste > 0.15) return { level:'warn', label:'CPU 병목 가능성',
+      detail:`${res.label} 기준으로 그래픽카드 성능의 약 ${Math.round(bal.waste * 100)}%를 CPU가 못 받쳐줍니다. `
+        + 'CPU를 한 단계 올리면 체감이 큽니다.' };
+    if (bal.spare > 0.45) return { level:'warn', label:'그래픽카드 여유 부족',
       detail:'CPU 성능이 남습니다. 예산을 그래픽카드에 더 쓰면 프레임이 크게 올라갑니다.' };
     return { level:'ok', label:'균형 잡힌 구성',
       detail:`CPU와 그래픽카드의 급이 ${res.label} 환경에 잘 맞습니다.` };
@@ -509,13 +526,15 @@ const Engine = (function () {
     }
   }
 
-  /* 총액 기준 체급 */
+  /* 총액 기준 체급.
+   * 2026년 메모리 · 저장장치 가격 상승으로 완성 견적의 하한선 자체가 100만원대로 올라
+   * 구간을 그에 맞춰 잡았다. */
   function tierLabel(price) {
-    if (price < 700000) return '엔트리';
-    if (price < 1100000) return '보급형';
-    if (price < 1700000) return '중급';
-    if (price < 2600000) return '고급';
-    if (price < 4000000) return '하이엔드';
+    if (price < 1300000) return '엔트리';
+    if (price < 1900000) return '보급형';
+    if (price < 2800000) return '중급';
+    if (price < 4500000) return '고급';
+    if (price < 8000000) return '하이엔드';
     return '익스트림';
   }
 

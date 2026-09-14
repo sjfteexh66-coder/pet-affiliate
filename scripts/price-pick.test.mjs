@@ -8,7 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import { pickPrice, normalize } from './price-pick.mjs';
-import { updatePrices } from './update-prices.mjs';
+import { updatePrices, loadCurrentPrices } from './update-prices.mjs';
 import { PRICE_QUERIES } from './price-queries.mjs';
 
 const item = (title, lprice) => ({ title, lprice: String(lprice) });
@@ -118,8 +118,10 @@ test('전체 갱신 흐름 — 생성된 파일이 사이트에 그대로 적용
 
   assert.equal(out.report.failed.length, 1);
   assert.equal(out.report.failed[0].id, 'gpu-5070');
-  assert.equal(out.results['cpu-r5-7500f'], 175000);   // 기존 가격 유지
-  assert.equal(out.results['gpu-5070'], 830000);
+  // 가격을 고르지 못했거나 호출이 실패하면 사이트에 들어 있던 가격을 그대로 둔다
+  const current = loadCurrentPrices();
+  assert.equal(out.results['cpu-r5-7500f'], current['cpu-r5-7500f'].price);
+  assert.equal(out.results['gpu-5070'], current['gpu-5070'].price);
 
   // 생성된 파일이 parts-data.js 와 합쳐졌을 때 정상 동작하는지
   const tmp = path.join(os.tmpdir(), 'prices-test.js');
