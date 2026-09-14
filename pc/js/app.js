@@ -98,7 +98,8 @@ function syncWizard() {
 }
 
 /* ===== 견적 생성 ===== */
-function generate() {
+function generate(options) {
+  const scroll = !options || options.scroll !== false;
   const result = Engine.recommend({
     purpose: state.purpose, budget: state.budget, res: state.res, brand: state.brand
   });
@@ -111,7 +112,7 @@ function generate() {
   state.overBudget = result.overBudget;
   renderResult();
   save();
-  el('result').scrollIntoView({ behavior:'smooth', block:'start' });
+  if (scroll) el('result').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 /* ===== 결과 렌더링 ===== */
@@ -422,10 +423,12 @@ document.addEventListener('DOMContentLoaded', () => {
     el('wizard-section').scrollIntoView({ behavior:'smooth', block:'start' });
   });
 
-  // 저장된 견적 또는 공유 링크 복원
+  // 저장된 견적 · 공유 링크가 있으면 그대로 복원하고, 없으면 기본 조건으로 예시 견적을 만든다
   if (loadInitial()) {
     syncWizard();
     renderResult();
+  } else {
+    generate({ scroll: false });
   }
 
   // 모바일 메뉴
