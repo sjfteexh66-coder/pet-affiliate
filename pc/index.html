@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>조립PC 견적기 - 예산·용도 맞춤 견적 자동 생성</title>
+  <meta name="description" content="용도와 예산을 고르면 소켓·전력·크기 호환성을 검수한 조립PC 견적서를 바로 만들어 줍니다. 부품 교체, 예상 FPS, 견적서 복사·인쇄 지원.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Nanum+Myeongjo:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/pc.css">
+</head>
+<body>
+
+<!-- 도장 가장자리의 인주 번짐 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="ink">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7"/>
+    <feDisplacementMap in="SourceGraphic" scale="1.8"/>
+  </filter>
+</svg>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a href="#top" class="brand"><span class="brand-seal" aria-hidden="true">견</span>조립PC 견적기</a>
+    <button type="button" class="menu-btn" aria-expanded="false" aria-controls="site-nav">메뉴</button>
+    <nav class="site-nav" id="site-nav" aria-label="바로가기">
+      <a href="#quote" class="nav-quote">견적서</a>
+      <a href="#annex" class="nav-quote">별첨</a>
+      <a href="#guide">고르는 법</a>
+      <a href="#faq">묻고 답하기</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <h1 class="sr-only">조립PC 견적기</h1>
+
+  <!-- ===== 견적 의뢰 : 처음 들어오면 하나씩 묻는다 ===== -->
+  <section class="wrap intake" id="intake" aria-labelledby="intake-q" hidden>
+    <div class="sheet intake-card">
+      <div class="intake-top">
+        <span class="intake-label">견적 의뢰</span>
+        <span class="intake-count num" id="intake-count"></span>
+      </div>
+      <ol class="intake-progress" id="intake-progress" aria-hidden="true"></ol>
+      <p class="intake-recap" id="intake-recap"></p>
+
+      <h2 class="intake-q" id="intake-q" tabindex="-1"></h2>
+      <p class="intake-hint" id="intake-hint"></p>
+      <div class="intake-body" id="intake-body"></div>
+
+      <div class="intake-nav">
+        <button type="button" class="intake-back" id="intake-back">이전 질문</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap bench" id="bench">
+
+    <!-- ===== 견적 조건 ===== -->
+    <aside class="conditions" id="conditions" data-open="false" aria-labelledby="cond-title">
+      <div class="cond-head">
+        <h2 id="cond-title">견적 조건</h2>
+        <p>고르는 대로 견적서가 다시 계산됩니다.</p>
+      </div>
+
+      <button type="button" class="cond-toggle" id="cond-toggle" aria-expanded="false" aria-controls="cond-body">
+        <span class="cond-summary" id="cond-summary"></span>
+        <span class="cond-toggle-label" id="cond-toggle-label">조건 바꾸기</span>
+      </button>
+
+      <div class="cond-body" id="cond-body">
+
+      <fieldset class="field">
+        <legend>용도</legend>
+        <div class="choice-list" id="purpose-opts"></div>
+      </fieldset>
+
+      <fieldset class="field">
+        <legend>예산 <small>본체만 · 모니터와 주변기기 제외</small></legend>
+        <div class="budget-out">
+          <strong id="budget-text"><span class="num">200</span>만원</strong>
+          <span class="budget-tier" id="budget-tier"></span>
+        </div>
+        <input type="range" id="budget-range" min="1000000" max="14000000" step="100000" value="2000000"
+               aria-label="예산">
+        <div class="presets" id="budget-presets"></div>
+      </fieldset>
+
+      <fieldset class="field" id="step-res">
+        <legend>모니터</legend>
+        <div class="choice-list compact" id="res-opts"></div>
+      </fieldset>
+
+      <fieldset class="field">
+        <legend>CPU 제조사</legend>
+        <div class="segmented" id="brand-opts"></div>
+      </fieldset>
+
+      <p class="cond-note">직접 바꾼 부품은 조건을 다시 고르면 초기화됩니다.</p>
+      </div>
+    </aside>
+
+    <!-- ===== 견적서 ===== -->
+    <section id="quote" aria-label="견적서">
+      <article class="sheet" id="sheet">
+        <header class="sheet-head">
+          <h2 class="sheet-title">견적서</h2>
+          <dl class="sheet-meta">
+            <div><dt>견적번호</dt><dd id="quote-no">-</dd></div>
+            <div><dt>견적일자</dt><dd id="quote-date">-</dd></div>
+          </dl>
+        </header>
+
+        <div class="parties">
+          <p class="to">
+            <span class="blank"></span>귀하
+            <span class="to-sub">아래와 같이 견적합니다.</span>
+          </p>
+          <table class="supplier">
+            <caption class="sr-only">공급자</caption>
+            <tr>
+              <th scope="row">상호</th>
+              <td>조립PC 견적기<span class="seal-mark">(인)<span class="stamp" role="img" aria-label="참고견적 도장"><i>참</i><i>고</i><i>견</i><i>적</i></span></span></td>
+            </tr>
+            <tr><th scope="row">방식</th><td>조건에 맞춘 자동 견적</td></tr>
+            <tr><th scope="row">가격 기준</th><td id="price-basis-short">-</td></tr>
+          </table>
+        </div>
+
+        <p class="amount">
+          <span class="amount-label">합계금액</span>
+          <strong class="amount-hangul" id="amount-hangul">-</strong>
+          <span class="amount-num" id="amount-num"></span>
+          <span class="amount-vat">부가세 포함 · 조립비 별도</span>
+        </p>
+
+        <table class="items">
+          <caption class="sr-only">품목</caption>
+          <thead>
+            <tr>
+              <th class="c-no" scope="col">번호</th>
+              <th class="c-cat" scope="col">구분</th>
+              <th scope="col">품명 및 규격</th>
+              <th class="c-qty" scope="col">수량</th>
+              <th class="c-unit" scope="col">단가</th>
+              <th class="c-amt" scope="col">금액(원)</th>
+              <th class="c-act" scope="col"><span class="sr-only">교체</span></th>
+            </tr>
+          </thead>
+          <tbody id="quote-body"></tbody>
+          <tfoot>
+            <tr class="sum-sub">
+              <th colspan="5" scope="row">공급가액</th>
+              <td class="c-amt num" id="quote-supply">-</td>
+              <td class="c-act"></td>
+            </tr>
+            <tr class="sum-sub">
+              <th colspan="5" scope="row">부가세</th>
+              <td class="c-amt num" id="quote-vat">-</td>
+              <td class="c-act"></td>
+            </tr>
+            <tr class="sum-total">
+              <th colspan="5" scope="row">합계</th>
+              <td class="c-amt num" id="quote-total">-</td>
+              <td class="c-act"></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <section class="remarks" aria-labelledby="remarks-title">
+          <h3 id="remarks-title">비고</h3>
+          <ol id="remarks"></ol>
+        </section>
+      </article>
+
+      <div class="sheet-actions">
+        <button type="button" id="copy-btn">견적서 텍스트 복사</button>
+        <button type="button" id="share-btn">이 견적 링크 복사</button>
+        <button type="button" id="print-btn">인쇄 · PDF</button>
+        <button type="button" id="reset-btn">처음부터 다시</button>
+      </div>
+
+      <section class="tweaks" id="tweaks" aria-labelledby="tweaks-title">
+        <div class="tweaks-head">
+          <h2 id="tweaks-title" class="sr-only">더 보태거나 줄이기</h2>
+          <div class="tweak-tabs" role="tablist" aria-label="견적 조정">
+            <button type="button" role="tab" id="tab-up" aria-selected="true" data-dir="up">더 보태면</button>
+            <button type="button" role="tab" id="tab-down" aria-selected="false" data-dir="down">줄이려면</button>
+          </div>
+          <p class="tweaks-lede" id="tweaks-lede"></p>
+        </div>
+        <ol class="tweak-list" id="tweak-list" role="tabpanel" aria-labelledby="tab-up"></ol>
+      </section>
+    </section>
+  </div>
+
+  <!-- ===== 별첨 ===== -->
+  <div class="wrap annex" id="annex">
+    <article class="sheet" aria-labelledby="annex1-title">
+      <header class="annex-head">
+        <span class="annex-tag">별첨 1</span>
+        <h2 id="annex1-title">호환성 검수</h2>
+        <p id="checks-sub"></p>
+      </header>
+      <table class="checks">
+        <thead><tr><th scope="col">항목</th><th scope="col">판정</th><th scope="col">내용</th></tr></thead>
+        <tbody id="checks"></tbody>
+      </table>
+    </article>
+
+    <article class="sheet" aria-labelledby="annex2-title">
+      <header class="annex-head">
+        <span class="annex-tag">별첨 2</span>
+        <h2 id="annex2-title">예상 성능</h2>
+        <p id="perf-sub"></p>
+      </header>
+      <p class="analysis" id="analysis"></p>
+      <table class="fps">
+        <thead>
+          <tr>
+            <th scope="col">게임</th>
+            <th scope="col">설정</th>
+            <th class="c-amt" scope="col">FPS</th>
+            <th class="c-bar" scope="col"><span class="sr-only">비교 막대</span></th>
+            <th scope="col">한계</th>
+          </tr>
+        </thead>
+        <tbody id="fps"></tbody>
+      </table>
+      <p class="footnote">부품 등급으로 계산한 추정치입니다. 그래픽 옵션, 게임 패치, DLSS · FSR 사용 여부에 따라 실제 프레임은 꽤 달라집니다. 막대는 240fps를 끝으로 잡았습니다.</p>
+    </article>
+  </div>
+
+  <!-- ===== 고르는 법 ===== -->
+  <section class="wrap reading" id="guide" aria-labelledby="guide-title">
+    <h2 id="guide-title">고르는 법</h2>
+    <p class="reading-lede">견적서의 부품을 직접 바꾸기 전에 알아두면 좋은 기준입니다.</p>
+
+    <div class="guide-grid">
+      <article>
+        <h3>예산 나누기</h3>
+        <p>게임용이라면 그래픽카드에 30~40%, CPU에 12~20% 정도가 보통입니다. 영상편집이나 3D 작업은 CPU와 메모리 쪽으로 무게를 옮기고, 사무용은 내장그래픽이 있는 CPU를 고르면 그래픽카드 값이 통째로 빠집니다.</p>
+        <p>올해는 메모리가 변수입니다. D램 값이 예년의 3~5배라 32GB 한 세트가 그래픽카드 한 등급 차이만큼 합니다. 게임 · 사무용이라면 16GB로 시작하고 값이 내려간 뒤에 늘리는 쪽이 낫습니다.</p>
+      </article>
+
+      <article>
+        <h3>CPU</h3>
+        <p>AM5와 LGA1851이 지금 주력 소켓이고, AM4와 LGA1700은 사실상 끝난 플랫폼입니다. 나중에 CPU만 바꿔 쓸 생각이면 최신 소켓을 고르세요. 다만 올해는 DDR4를 쓰는 구형 플랫폼이 메모리 값 덕분에 싸게 먹히는 경우가 많습니다.</p>
+        <p>게임 프레임이 목적이면 라이젠 X3D가 같은 값에서 가장 잘 나옵니다. 인코딩 · 렌더링은 코어가 많은 쪽이 낫습니다. 이름에 F가 붙은 인텔 CPU와 라이젠 7500F는 내장그래픽이 없어서 그래픽카드가 꼭 있어야 합니다.</p>
+      </article>
+
+      <article>
+        <h3>그래픽카드</h3>
+        <p>모니터에 맞추는 게 기본입니다. FHD 60Hz는 40~50만원대면 충분하고, 그 이상은 모니터가 못 받아줍니다. FHD 144Hz는 50~80만원대, QHD 144Hz는 90~130만원대, 4K는 130만원 이상을 보세요.</p>
+        <p>QHD부터는 VRAM 12GB, 4K는 16GB를 기준으로 잡는 게 안전합니다. 경쟁 게임에서 240Hz를 노린다면 그래픽카드보다 CPU가 먼저 한계에 닿습니다.</p>
+      </article>
+
+      <article>
+        <h3>메모리와 SSD</h3>
+        <p>DDR4와 DDR5는 서로 호환되지 않고, 메인보드가 정한 규격만 꽂힙니다. 라이젠 7000 · 9000 시리즈에는 DDR5 6000MHz CL30이 가장 잘 맞습니다.</p>
+        <p>SSD는 1TB를 최소로 보세요. 500GB는 요즘 게임 두세 개면 찹니다. 낸드 값이 올라 2TB부터는 부담이 큰데, 용량이 모자라면 나중에 한 장 더 다는 편이 쌉니다.</p>
+      </article>
+
+      <article>
+        <h3>파워</h3>
+        <p>CPU와 그래픽카드 소비전력을 더한 뒤 30% 정도 여유를 두면 됩니다. 견적서 비고란에 그 계산을 적어 둡니다. 고성능 그래픽카드라면 80PLUS 골드, ATX 3.1 규격이 전원 변동에 안정적입니다.</p>
+      </article>
+
+      <article>
+        <h3>쿨러와 케이스</h3>
+        <p>미니타워에 큰 타워형 공랭을 넣으면 옆판이 안 닫히고, 300mm가 넘는 그래픽카드는 작은 케이스에 들어가지 않습니다. 이런 치수는 별첨 1에서 하나씩 검수합니다.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== 묻고 답하기 ===== -->
+  <section class="wrap reading" id="faq" aria-labelledby="faq-title">
+    <h2 id="faq-title">묻고 답하기</h2>
+    <p class="reading-lede">자주 받는 질문을 모았습니다.</p>
+
+    <dl class="qa">
+      <dt>견적은 어떤 식으로 짜나요?</dt>
+      <dd>용도별 최소 조건(메모리 용량, SSD, 그래픽카드 필요 여부)을 맞추는 가장 싼 조합에서 시작해서, 남은 돈으로 만원당 성능이 가장 많이 오르는 부품부터 하나씩 올립니다. CPU가 그래픽카드를 못 따라가 프레임이 버려지는 조합은 감점해서, 한쪽에만 돈이 몰리지 않게 합니다.</dd>
+
+      <dt>가격이 실제와 다릅니다.</dt>
+      <dd>표시된 가격은 <span id="faq-price-date">-</span>입니다. 요즘은 메모리 값이 주 단위로 움직여서 차이가 날 수 있습니다. 구성과 호환성 판단은 가격이 조금 달라져도 그대로 쓸 수 있으니, 사기 직전에 판매처에서 최종 가격만 확인하세요.</dd>
+
+      <dt>예상 FPS는 얼마나 맞나요?</dt>
+      <dd>부품 등급으로 계산한 값이라 절대 수치보다는 비교용으로 보세요. 부품을 바꿨을 때 프레임이 어느 쪽으로 얼마나 움직이는지 보는 데 쓸모가 있습니다.</dd>
+
+      <dt>예산을 다 안 썼습니다.</dt>
+      <dd>다음 등급 부품이 남은 돈보다 비싸거나, 용도에 비해 과한 부품(게임용 64GB 메모리 같은)이라 넣지 않은 경우입니다. 견적서 아래 「더 보태면」에서 조금 더 썼을 때 효과가 큰 교체를 볼 수 있고, 남은 돈은 모니터나 주변기기에 쓰셔도 됩니다.</dd>
+
+      <dt>이 견적서로 바로 살 수 있나요?</dt>
+      <dd>견적서 텍스트를 복사해 조립 업체나 매장에 보여주면 됩니다. 도장에 적힌 대로 참고용이라, 품목마다 붙은 「다나와 시세」 링크로 지금 가격을 확인하고 매장에서 재고를 다시 확인받으세요. 조립비는 보통 3~5만원이 따로 듭니다.</dd>
+    </dl>
+  </section>
+</main>
+
+<footer class="wrap site-foot">
+  <p><strong>조립PC 견적기</strong></p>
+  <p>표시 가격은 <span id="price-date-note">-</span>이며 실제 판매가와 다를 수 있습니다. 예상 FPS와 소비전력은 부품 등급으로 계산한 값입니다.
+     「다나와 시세」는 다나와 검색 결과로 연결되는 링크이며, 특정 판매처나 제조사와 제휴 관계가 없고 부품을 팔거나 중개하지 않습니다.</p>
+</footer>
+
+<!-- ===== 부품 교체 ===== -->
+<dialog id="swap-dialog" aria-labelledby="dlg-title">
+  <div class="dlg-head">
+    <div>
+      <h3 id="dlg-title">부품 교체</h3>
+      <p id="dlg-desc"></p>
+    </div>
+    <button type="button" class="dlg-close" id="dlg-close">닫기</button>
+  </div>
+  <div class="dlg-body" id="dlg-body"></div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/prices.js"></script>
+<script src="js/parts-data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
