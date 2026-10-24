@@ -14,38 +14,38 @@ const PARTS = {
 
   /* ===== CPU ===== */
   cpu: [
-    { id:'cpu-r5-5600',  name:'AMD 라이젠5 5600',        brand:'AMD',   socket:'AM4',     cores:6,  threads:12, tdp:65,  mem:['DDR4'],          igpu:false, bundled:true,  gameScore:58,  workScore:30,  price:115000 },
-    { id:'cpu-i5-12400f',name:'인텔 코어i5-12400F',      brand:'Intel', socket:'LGA1700', cores:6,  threads:12, tdp:65,  mem:['DDR4','DDR5'],   igpu:false, bundled:true,  gameScore:62,  workScore:32,  price:150000 },
-    { id:'cpu-r5-7500f', name:'AMD 라이젠5 7500F',       brand:'AMD',   socket:'AM5',     cores:6,  threads:12, tdp:65,  mem:['DDR5'],          igpu:false, bundled:true,  gameScore:70,  workScore:36,  price:190000 },
-    { id:'cpu-r5-7600',  name:'AMD 라이젠5 7600',        brand:'AMD',   socket:'AM5',     cores:6,  threads:12, tdp:65,  mem:['DDR5'],          igpu:true,  bundled:true,  gameScore:71,  workScore:37,  price:290000 },
-    { id:'cpu-i5-14400f',name:'인텔 코어i5-14400F',      brand:'Intel', socket:'LGA1700', cores:10, threads:16, tdp:65,  mem:['DDR4','DDR5'],   igpu:false, bundled:true,  gameScore:70,  workScore:44,  price:230000 },
-    { id:'cpu-r5-9600x', name:'AMD 라이젠5 9600X',       brand:'AMD',   socket:'AM5',     cores:6,  threads:12, tdp:65,  mem:['DDR5'],          igpu:true,  bundled:false, gameScore:78,  workScore:43,  price:300000 },
-    { id:'cpu-u5-245k',  name:'인텔 코어 울트라5 245K',  brand:'Intel', socket:'LGA1851', cores:14, threads:14, tdp:125, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:80,  workScore:62,  price:330000 },
-    { id:'cpu-r7-9700x', name:'AMD 라이젠7 9700X',       brand:'AMD',   socket:'AM5',     cores:8,  threads:16, tdp:65,  mem:['DDR5'],          igpu:true,  bundled:false, gameScore:83,  workScore:55,  price:400000 },
-    { id:'cpu-i7-14700f',name:'인텔 코어i7-14700F',      brand:'Intel', socket:'LGA1700', cores:20, threads:28, tdp:219, mem:['DDR4','DDR5'],   igpu:false, bundled:true,  gameScore:82,  workScore:78,  price:420000 },
-    { id:'cpu-r7-7800x3d',name:'AMD 라이젠7 7800X3D',    brand:'AMD',   socket:'AM5',     cores:8,  threads:16, tdp:120, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:92,  workScore:52,  price:440000 },
-    { id:'cpu-u7-265k',  name:'인텔 코어 울트라7 265K',  brand:'Intel', socket:'LGA1851', cores:20, threads:20, tdp:125, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:86,  workScore:82,  price:470000 },
-    { id:'cpu-r9-9900x', name:'AMD 라이젠9 9900X',       brand:'AMD',   socket:'AM5',     cores:12, threads:24, tdp:120, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:85,  workScore:78,  price:570000 },
-    { id:'cpu-r7-9800x3d',name:'AMD 라이젠7 9800X3D',    brand:'AMD',   socket:'AM5',     cores:8,  threads:16, tdp:120, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:100, workScore:62,  price:720000 },
-    { id:'cpu-u9-285k',  name:'인텔 코어 울트라9 285K',  brand:'Intel', socket:'LGA1851', cores:24, threads:24, tdp:125, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:88,  workScore:95,  price:700000 },
-    { id:'cpu-r9-9950x', name:'AMD 라이젠9 9950X',       brand:'AMD',   socket:'AM5',     cores:16, threads:32, tdp:170, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:88,  workScore:100, price:830000 }
+    { id:'cpu-r5-5600',  name:'AMD 라이젠5-4세대 5600 (버미어) (멀티팩 정품)',        brand:'AMD',   socket:'AM4',     cores:6,  threads:12, tdp:65,  mem:['DDR4'],          igpu:false, bundled:true,  gameScore:58,  workScore:30,  price:115000 },
+    { id:'cpu-i5-12400f',name:'인텔 코어i5-12세대 12400F (엘더레이크) (정품)',      brand:'Intel', socket:'LGA1700', cores:6,  threads:12, tdp:65,  mem:['DDR4','DDR5'],   igpu:false, bundled:true,  gameScore:62,  workScore:32,  price:150000 },
+    { id:'cpu-r5-7500f', name:'AMD 라이젠5-5세대 7500F (라파엘) (멀티팩 정품)',       brand:'AMD',   socket:'AM5',     cores:6,  threads:12, tdp:65,  mem:['DDR5'],          igpu:false, bundled:true,  gameScore:70,  workScore:36,  price:190000 },
+    { id:'cpu-r5-7600',  name:'AMD 라이젠5-5세대 7600 (라파엘) (멀티팩 정품)',        brand:'AMD',   socket:'AM5',     cores:6,  threads:12, tdp:65,  mem:['DDR5'],          igpu:true,  bundled:true,  gameScore:71,  workScore:37,  price:290000 },
+    { id:'cpu-i5-14400f',name:'인텔 코어i5-14세대 14400F (랩터레이크 리프레시) (정품)',      brand:'Intel', socket:'LGA1700', cores:10, threads:16, tdp:65,  mem:['DDR4','DDR5'],   igpu:false, bundled:true,  gameScore:70,  workScore:44,  price:230000 },
+    { id:'cpu-r5-9600x', name:'AMD 라이젠5-6세대 9600X (그래니트 릿지) (멀티팩 정품)',       brand:'AMD',   socket:'AM5',     cores:6,  threads:12, tdp:65,  mem:['DDR5'],          igpu:true,  bundled:false, gameScore:78,  workScore:43,  price:300000 },
+    { id:'cpu-u5-245k',  name:'인텔 코어 울트라5 시리즈2 245K (애로우레이크) (정품)',  brand:'Intel', socket:'LGA1851', cores:14, threads:14, tdp:125, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:80,  workScore:62,  price:330000 },
+    { id:'cpu-r7-9700x', name:'AMD 라이젠7-6세대 9700X (그래니트 릿지) (멀티팩 정품)',       brand:'AMD',   socket:'AM5',     cores:8,  threads:16, tdp:65,  mem:['DDR5'],          igpu:true,  bundled:false, gameScore:83,  workScore:55,  price:400000 },
+    { id:'cpu-i7-14700f',name:'인텔 코어i7-14세대 14700F (랩터레이크 리프레시) (정품)',      brand:'Intel', socket:'LGA1700', cores:20, threads:28, tdp:219, mem:['DDR4','DDR5'],   igpu:false, bundled:true,  gameScore:82,  workScore:78,  price:420000 },
+    { id:'cpu-r7-7800x3d',name:'AMD 라이젠7-5세대 7800X3D (라파엘) (멀티팩 정품)',    brand:'AMD',   socket:'AM5',     cores:8,  threads:16, tdp:120, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:92,  workScore:52,  price:440000 },
+    { id:'cpu-u7-265k',  name:'인텔 코어 울트라7 시리즈2 265K (애로우레이크) (정품)',  brand:'Intel', socket:'LGA1851', cores:20, threads:20, tdp:125, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:86,  workScore:82,  price:470000 },
+    { id:'cpu-r9-9900x', name:'AMD 라이젠9-6세대 9900X (그래니트 릿지) (멀티팩 정품)',       brand:'AMD',   socket:'AM5',     cores:12, threads:24, tdp:120, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:85,  workScore:78,  price:570000 },
+    { id:'cpu-r7-9800x3d',name:'AMD 라이젠7-6세대 9800X3D (그래니트 릿지) (멀티팩 정품)',    brand:'AMD',   socket:'AM5',     cores:8,  threads:16, tdp:120, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:100, workScore:62,  price:720000 },
+    { id:'cpu-u9-285k',  name:'인텔 코어 울트라9 시리즈2 285K (애로우레이크) (정품)',  brand:'Intel', socket:'LGA1851', cores:24, threads:24, tdp:125, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:88,  workScore:95,  price:700000 },
+    { id:'cpu-r9-9950x', name:'AMD 라이젠9-6세대 9950X (그래니트 릿지) (멀티팩 정품)',       brand:'AMD',   socket:'AM5',     cores:16, threads:32, tdp:170, mem:['DDR5'],          igpu:true,  bundled:false, gameScore:88,  workScore:100, price:830000 }
   ],
 
   /* ===== 그래픽카드 : score는 RTX 5070 = 100 기준 상대 지수 ===== */
   gpu: [
-    { id:'gpu-igpu',     name:'내장 그래픽 사용 (별도 구매 없음)', brand:'-',     vram:0,  tdp:0,   length:0,   score:8,   price:0,       needsIgpu:true },
-    { id:'gpu-b580',     name:'인텔 아크 B580 12GB',       brand:'Intel',  vram:12, tdp:190, length:272, score:52,  price:400000 },
-    { id:'gpu-5050',     name:'지포스 RTX 5050 8GB',       brand:'NVIDIA', vram:8,  tdp:130, length:244, score:55,  price:440000 },
-    { id:'gpu-5060',     name:'지포스 RTX 5060 8GB',       brand:'NVIDIA', vram:8,  tdp:145, length:245, score:68,  price:460000 },
-    { id:'gpu-9060xt8',  name:'라데온 RX 9060 XT 8GB',     brand:'AMD',    vram:8,  tdp:150, length:250, score:72,  price:520000 },
-    { id:'gpu-9060xt16', name:'라데온 RX 9060 XT 16GB',    brand:'AMD',    vram:16, tdp:160, length:260, score:74,  price:600000 },
-    { id:'gpu-5060ti16', name:'지포스 RTX 5060 Ti 16GB',   brand:'NVIDIA', vram:16, tdp:180, length:250, score:82,  price:780000 },
-    { id:'gpu-5070',     name:'지포스 RTX 5070 12GB',      brand:'NVIDIA', vram:12, tdp:250, length:270, score:100, price:950000 },
-    { id:'gpu-9070',     name:'라데온 RX 9070 16GB',       brand:'AMD',    vram:16, tdp:220, length:280, score:108, price:1030000 },
-    { id:'gpu-9070xt',   name:'라데온 RX 9070 XT 16GB',    brand:'AMD',    vram:16, tdp:304, length:290, score:120, price:1120000 },
-    { id:'gpu-5070ti',   name:'지포스 RTX 5070 Ti 16GB',   brand:'NVIDIA', vram:16, tdp:300, length:300, score:124, price:1230000 },
-    { id:'gpu-5080',     name:'지포스 RTX 5080 16GB',      brand:'NVIDIA', vram:16, tdp:360, length:310, score:148, price:2300000 },
-    { id:'gpu-5090',     name:'지포스 RTX 5090 32GB',      brand:'NVIDIA', vram:32, tdp:575, length:340, score:200, price:8300000 }
+    { id:'gpu-igpu',     name:'CPU 내장그래픽 사용', brand:'-',     vram:0,  tdp:0,   length:0,   score:8,   price:0,       needsIgpu:true },
+    { id:'gpu-b580',     name:'ASRock 인텔 아크 B580 Challenger OC D6 12GB',       brand:'Intel',  vram:12, tdp:190, length:270, score:52,  price:400000},
+    { id:'gpu-5050',     name:'GIGABYTE 지포스 RTX 5050 WINDFORCE OC D6 8GB',       brand:'NVIDIA', vram:8,  tdp:130, length:211, score:55,  price:440000},
+    { id:'gpu-5060',     name:'ASUS DUAL 지포스 RTX 5060 OC D7 8GB',       brand:'NVIDIA', vram:8,  tdp:145, length:229, score:68,  price:460000},
+    { id:'gpu-9060xt8',  name:'ASUS DUAL 라데온 RX 9060 XT OC D6 8GB',     brand:'AMD',    vram:8,  tdp:150, length:232, score:72,  price:520000},
+    { id:'gpu-9060xt16', name:'ASUS DUAL 라데온 RX 9060 XT D6 16GB',    brand:'AMD',    vram:16, tdp:160, length:232, score:74,  price:600000},
+    { id:'gpu-5060ti16', name:'MSI 지포스 RTX 5060 Ti 게이밍 OC D7 16GB 트윈프로져',   brand:'NVIDIA', vram:16, tdp:180, length:247, score:82,  price:740000},
+    { id:'gpu-5070',     name:'MSI 지포스 RTX 5070 벤투스 2X OC D7 12GB',      brand:'NVIDIA', vram:12, tdp:250, length:242, score:100, price:950000},
+    { id:'gpu-9070',     name:'PowerColor 라데온 RX 9070 Reaper D6 16GB',       brand:'AMD',    vram:16, tdp:220, length:304, score:108, price:1030000},
+    { id:'gpu-9070xt',   name:'SAPPHIRE 라데온 RX 9070 XT PULSE D6 16GB',    brand:'AMD',    vram:16, tdp:304, length:310, score:120, price:1120000},
+    { id:'gpu-5070ti',   name:'MSI 지포스 RTX 5070 Ti 쉐도우 3X OC D7 16GB',   brand:'NVIDIA', vram:16, tdp:300, length:303, score:124, price:1230000},
+    { id:'gpu-5080',     name:'갤럭시 GALAX 지포스 RTX 5080 BLACK OC D7 16GB',      brand:'NVIDIA', vram:16, tdp:360, length:322, score:148, price:2280000},
+    { id:'gpu-5090',     name:'조텍 GAMING 지포스 RTX 5090 SOLID OC D7 32GB',      brand:'NVIDIA', vram:32, tdp:575, length:332, score:200, price:8300000}
   ],
 
   /* ===== 메인보드 ===== */
@@ -62,53 +62,53 @@ const PARTS = {
     { id:'mb-x870',    name:'ASUS ROG STRIX X870-F',     socket:'AM5',     chipset:'X870', form:'ATX',   mem:'DDR5', slots:4, m2:4, wifi:true,  score:92, price:510000 }
   ],
 
-  /* ===== 메모리 ===== */
+  /* ===== 메모리 : qty 는 견적서 수량 (단품 2개 = 2, 2개들이 패키지 = 1), price 는 그 줄의 합계 ===== */
   ram: [
-    { id:'ram-d4-16',  name:'DDR4 16GB (8GB×2) 3200',        type:'DDR4', capacity:16, sticks:2, speed:3200, score:30,  price:200000 },
-    { id:'ram-d4-32',  name:'DDR4 32GB (16GB×2) 3200',       type:'DDR4', capacity:32, sticks:2, speed:3200, score:50,  price:360000 },
-    { id:'ram-d5-16',  name:'DDR5 16GB (8GB×2) 5600',        type:'DDR5', capacity:16, sticks:2, speed:5600, score:40,  price:380000 },
-    { id:'ram-d5-32',  name:'DDR5 32GB (16GB×2) 5600',       type:'DDR5', capacity:32, sticks:2, speed:5600, score:62,  price:720000 },
-    { id:'ram-d5-32-6000',name:'DDR5 32GB (16GB×2) 6000 CL30',type:'DDR5',capacity:32, sticks:2, speed:6000, score:72,  price:790000 },
-    { id:'ram-d5-64',  name:'DDR5 64GB (32GB×2) 6000',       type:'DDR5', capacity:64, sticks:2, speed:6000, score:88,  price:1540000 },
-    { id:'ram-d5-96',  name:'DDR5 96GB (48GB×2) 6000',       type:'DDR5', capacity:96, sticks:2, speed:6000, score:100, price:2300000 }
+    { id:'ram-d4-16',  name:'삼성전자 DDR4-3200 (8GB)', qty:2,        type:'DDR4', capacity:16, sticks:2, speed:3200, score:30,  price:200000 },
+    { id:'ram-d4-32',  name:'삼성전자 DDR4-3200 (16GB)', qty:2,       type:'DDR4', capacity:32, sticks:2, speed:3200, score:50,  price:360000 },
+    { id:'ram-d5-16',  name:'삼성전자 DDR5-5600 (8GB)', qty:2,        type:'DDR5', capacity:16, sticks:2, speed:5600, score:40,  price:380000 },
+    { id:'ram-d5-32',  name:'삼성전자 DDR5-5600 (16GB)', qty:2,       type:'DDR5', capacity:32, sticks:2, speed:5600, score:62,  price:720000 },
+    { id:'ram-d5-32-6000',name:'G.SKILL DDR5-6000 CL30 TRIDENT Z5 NEO RGB (32GB(16Gx2))', qty:1,type:'DDR5',capacity:32, sticks:2, speed:6000, score:72,  price:790000 },
+    { id:'ram-d5-64',  name:'삼성전자 DDR5-5600 (32GB)', qty:2,       type:'DDR5', capacity:64, sticks:2, speed:5600, score:88,  price:1540000 },
+    { id:'ram-d5-96',  name:'마이크론 Crucial DDR5-5600 CL46 (48GB)', qty:2,       type:'DDR5', capacity:96, sticks:2, speed:5600, score:100, price:2300000 }
   ],
 
   /* ===== 저장장치 ===== */
   storage: [
-    { id:'ssd-500',    name:'NVMe SSD 500GB (Gen3)',         iface:'M.2 NVMe', capacity:500,  seq:3500, score:30,  price:120000 },
-    { id:'ssd-1t',     name:'NVMe SSD 1TB (Gen4)',           iface:'M.2 NVMe', capacity:1000, seq:5000, score:55,  price:220000 },
-    { id:'ssd-1t-fast',name:'NVMe SSD 1TB (Gen4 고성능)',    iface:'M.2 NVMe', capacity:1000, seq:7000, score:65,  price:270000 },
-    { id:'ssd-2t',     name:'NVMe SSD 2TB (Gen4)',           iface:'M.2 NVMe', capacity:2000, seq:7000, score:80,  price:470000 },
-    { id:'ssd-4t',     name:'NVMe SSD 4TB (Gen4)',           iface:'M.2 NVMe', capacity:4000, seq:7000, score:100, price:950000 }
+    { id:'ssd-500',    name:'SK하이닉스 Gold P31 M.2 NVMe (500GB)',         iface:'M.2 NVMe Gen3', capacity:500,  seq:3500, score:30,  price:120000 },
+    { id:'ssd-1t',     name:'WD Blue SN5000 M.2 NVMe (1TB)',           iface:'M.2 NVMe Gen4', capacity:1000, seq:5150, score:55,  price:220000 },
+    { id:'ssd-1t-fast',name:'WD BLACK SN850X M.2 NVMe (1TB)',    iface:'M.2 NVMe Gen4', capacity:1000, seq:7300, score:65,  price:270000 },
+    { id:'ssd-2t',     name:'삼성전자 990 EVO Plus M.2 NVMe (2TB)',           iface:'M.2 NVMe Gen4', capacity:2000, seq:7250, score:80,  price:470000 },
+    { id:'ssd-4t',     name:'삼성전자 990 EVO Plus M.2 NVMe (4TB)',           iface:'M.2 NVMe Gen4', capacity:4000, seq:7250, score:100, price:950000 }
   ],
 
   /* ===== 파워 ===== */
   psu: [
-    { id:'psu-500b',   name:'500W 80PLUS 브론즈',            watt:500,  rating:'브론즈',   modular:'논모듈러',  score:30,  price:60000 },
-    { id:'psu-600b',   name:'600W 80PLUS 브론즈',            watt:600,  rating:'브론즈',   modular:'논모듈러',  score:40,  price:78000 },
-    { id:'psu-700b',   name:'700W 80PLUS 브론즈 풀모듈러',   watt:700,  rating:'브론즈',   modular:'풀모듈러',  score:55,  price:105000 },
-    { id:'psu-750g',   name:'750W 80PLUS 골드 풀모듈러',     watt:750,  rating:'골드',     modular:'풀모듈러',  score:68,  price:135000 },
-    { id:'psu-850g',   name:'850W 80PLUS 골드 ATX3.1',       watt:850,  rating:'골드',     modular:'풀모듈러',  score:80,  price:180000 },
-    { id:'psu-1000g',  name:'1000W 80PLUS 골드 ATX3.1',      watt:1000, rating:'골드',     modular:'풀모듈러',  score:90,  price:250000 },
-    { id:'psu-1200p',  name:'1200W 80PLUS 플래티넘 ATX3.1',  watt:1200, rating:'플래티넘', modular:'풀모듈러',  score:100, price:360000 }
+    { id:'psu-500b',   name:'마이크로닉스 Classic II 풀체인지 500W 80PLUS브론즈 230V EU',            watt:500,  rating:'브론즈',   modular:'논모듈러',  score:30,  price:60000},
+    { id:'psu-600b',   name:'마이크로닉스 Classic II 풀체인지 600W 80PLUS브론즈 230V EU',            watt:600,  rating:'브론즈',   modular:'논모듈러',  score:40,  price:78000},
+    { id:'psu-700b',   name:'마이크로닉스 Classic II 풀체인지 700W 80PLUS브론즈 230V EU',   watt:700,  rating:'브론즈',   modular:'논모듈러',  score:50,  price:92000},
+    { id:'psu-750g',   name:'마이크로닉스 ASTRO GD 750W 80PLUS골드 풀모듈러',     watt:750,  rating:'골드',     modular:'풀모듈러',  score:68,  price:135000},
+    { id:'psu-850g',   name:'마이크로닉스 ASTRO GD 850W 80PLUS골드 풀모듈러 ATX3.1',       watt:850,  rating:'골드',     modular:'풀모듈러',  score:80,  price:180000},
+    { id:'psu-1000g',  name:'시소닉 FOCUS GX-1000 ATX3.1 80PLUS골드 풀모듈러',      watt:1000, rating:'골드',     modular:'풀모듈러',  score:90,  price:250000},
+    { id:'psu-1200p',  name:'시소닉 PRIME PX-1200 ATX3.1 80PLUS플래티넘 풀모듈러',  watt:1200, rating:'플래티넘', modular:'풀모듈러',  score:100, price:420000}
   ],
 
   /* ===== 케이스 ===== */
   case: [
-    { id:'case-mini',  name:'미니타워 M-ATX (기본형)',       forms:['M-ATX'],       maxGpu:330, maxCooler:158, rad:240, score:30,  price:50000 },
-    { id:'case-mid',   name:'미들타워 ATX 강화유리',         forms:['ATX','M-ATX'], maxGpu:360, maxCooler:165, rad:240, score:48,  price:70000 },
-    { id:'case-mesh',  name:'미들타워 ATX 메쉬 (쿨링형)',    forms:['ATX','M-ATX'], maxGpu:400, maxCooler:175, rad:360, score:72,  price:110000 },
-    { id:'case-big',   name:'빅타워 ATX 프리미엄',           forms:['ATX','M-ATX'], maxGpu:430, maxCooler:185, rad:360, score:90,  price:170000 }
+    { id:'case-mini',  name:'darkFlash DLM21 MESH 미니타워',       forms:['M-ATX'],       maxGpu:320, maxCooler:160, rad:240, score:30,  price:50000},
+    { id:'case-mid',   name:'darkFlash DLX21 RGB MESH 강화유리 미들타워',         forms:['ATX','M-ATX'], maxGpu:400, maxCooler:165, rad:360, score:48,  price:70000},
+    { id:'case-mesh',  name:'리안리 LANCOOL 216 RGB 미들타워',    forms:['ATX','M-ATX'], maxGpu:392, maxCooler:180, rad:360, score:72,  price:125000},
+    { id:'case-big',   name:'리안리 O11 DYNAMIC EVO XL 빅타워',           forms:['ATX','M-ATX'], maxGpu:460, maxCooler:167, rad:360, score:90,  price:290000}
   ],
 
   /* ===== CPU 쿨러 ===== */
   cooler: [
-    { id:'cool-stock', name:'CPU 기본(번들) 쿨러',           type:'번들', height:80,  tdpMax:95,  rad:0,   score:15,  price:0, needsBundled:true },
-    { id:'cool-slim',  name:'슬림 공랭 (싱글팬)',            type:'공랭', height:130, tdpMax:120, rad:0,   score:30,  price:28000 },
-    { id:'cool-tower', name:'타워형 공랭 (듀얼팬)',          type:'공랭', height:158, tdpMax:180, rad:0,   score:55,  price:50000 },
-    { id:'cool-tower-p',name:'프리미엄 공랭 (듀얼타워)',     type:'공랭', height:165, tdpMax:250, rad:0,   score:78,  price:95000 },
-    { id:'cool-aio240',name:'240mm 수랭 일체형',             type:'수랭', height:0,   tdpMax:250, rad:240, score:80,  price:120000 },
-    { id:'cool-aio360',name:'360mm 수랭 일체형',             type:'수랭', height:0,   tdpMax:350, rad:360, score:95,  price:190000 }
+    { id:'cool-stock', name:'CPU 동봉 기본 쿨러',           type:'번들', height:80,  tdpMax:95,  rad:0,   score:15,  price:0, needsBundled:true },
+    { id:'cool-slim',  name:'DEEPCOOL AG400',            type:'공랭', height:150, tdpMax:150, rad:0,   score:30,  price:28000},
+    { id:'cool-tower', name:'써멀라이트 Peerless Assassin 120 SE',          type:'공랭', height:155, tdpMax:230, rad:0,   score:55,  price:50000},
+    { id:'cool-tower-p',name:'DEEPCOOL AK620 DIGITAL',     type:'공랭', height:162, tdpMax:260, rad:0,   score:78,  price:95000},
+    { id:'cool-aio240',name:'ARCTIC Liquid Freezer III 240',             type:'수랭', height:0,   tdpMax:250, rad:240, score:80,  price:120000},
+    { id:'cool-aio360',name:'ARCTIC Liquid Freezer III 360',             type:'수랭', height:0,   tdpMax:350, rad:360, score:95,  price:170000}
   ]
 };
 

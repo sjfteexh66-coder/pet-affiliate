@@ -38,11 +38,18 @@
   <div class="wrap bench">
 
     <!-- ===== 견적 조건 ===== -->
-    <aside class="conditions" aria-labelledby="cond-title">
+    <aside class="conditions" id="conditions" data-open="false" aria-labelledby="cond-title">
       <div class="cond-head">
         <h2 id="cond-title">견적 조건</h2>
         <p>고르는 대로 견적서가 다시 계산됩니다.</p>
       </div>
+
+      <button type="button" class="cond-toggle" id="cond-toggle" aria-expanded="false" aria-controls="cond-body">
+        <span class="cond-summary" id="cond-summary"></span>
+        <span class="cond-toggle-label" id="cond-toggle-label">조건 바꾸기</span>
+      </button>
+
+      <div class="cond-body" id="cond-body">
 
       <fieldset class="field">
         <legend>용도</legend>
@@ -71,6 +78,7 @@
       </fieldset>
 
       <p class="cond-note">직접 바꾼 부품은 조건을 다시 고르면 초기화됩니다.</p>
+      </div>
     </aside>
 
     <!-- ===== 견적서 ===== -->
@@ -115,14 +123,25 @@
               <th class="c-cat" scope="col">구분</th>
               <th scope="col">품명 및 규격</th>
               <th class="c-qty" scope="col">수량</th>
+              <th class="c-unit" scope="col">단가</th>
               <th class="c-amt" scope="col">금액(원)</th>
               <th class="c-act" scope="col"><span class="sr-only">교체</span></th>
             </tr>
           </thead>
           <tbody id="quote-body"></tbody>
           <tfoot>
-            <tr>
-              <th colspan="4" scope="row">합계</th>
+            <tr class="sum-sub">
+              <th colspan="5" scope="row">공급가액</th>
+              <td class="c-amt num" id="quote-supply">-</td>
+              <td class="c-act"></td>
+            </tr>
+            <tr class="sum-sub">
+              <th colspan="5" scope="row">부가세</th>
+              <td class="c-amt num" id="quote-vat">-</td>
+              <td class="c-act"></td>
+            </tr>
+            <tr class="sum-total">
+              <th colspan="5" scope="row">합계</th>
               <td class="c-amt num" id="quote-total">-</td>
               <td class="c-act"></td>
             </tr>
@@ -141,6 +160,18 @@
         <button type="button" id="print-btn">인쇄 · PDF</button>
         <button type="button" id="reset-btn">기본 조건으로</button>
       </div>
+
+      <section class="tweaks" id="tweaks" aria-labelledby="tweaks-title">
+        <div class="tweaks-head">
+          <h2 id="tweaks-title" class="sr-only">더 보태거나 줄이기</h2>
+          <div class="tweak-tabs" role="tablist" aria-label="견적 조정">
+            <button type="button" role="tab" id="tab-up" aria-selected="true" data-dir="up">더 보태면</button>
+            <button type="button" role="tab" id="tab-down" aria-selected="false" data-dir="down">줄이려면</button>
+          </div>
+          <p class="tweaks-lede" id="tweaks-lede"></p>
+        </div>
+        <ol class="tweak-list" id="tweak-list" role="tabpanel" aria-labelledby="tab-up"></ol>
+      </section>
     </section>
   </div>
 
@@ -239,10 +270,10 @@
       <dd>부품 등급으로 계산한 값이라 절대 수치보다는 비교용으로 보세요. 부품을 바꿨을 때 프레임이 어느 쪽으로 얼마나 움직이는지 보는 데 쓸모가 있습니다.</dd>
 
       <dt>예산을 다 안 썼습니다.</dt>
-      <dd>다음 등급 부품이 남은 돈보다 비싸거나, 용도에 비해 과한 부품(게임용 64GB 메모리 같은)이라 넣지 않은 경우입니다. 남은 돈은 모니터나 주변기기에 쓰셔도 됩니다.</dd>
+      <dd>다음 등급 부품이 남은 돈보다 비싸거나, 용도에 비해 과한 부품(게임용 64GB 메모리 같은)이라 넣지 않은 경우입니다. 견적서 아래 「더 보태면」에서 조금 더 썼을 때 효과가 큰 교체를 볼 수 있고, 남은 돈은 모니터나 주변기기에 쓰셔도 됩니다.</dd>
 
       <dt>이 견적서로 바로 살 수 있나요?</dt>
-      <dd>견적서 텍스트를 복사해 조립 업체나 매장에 보여주면 됩니다. 도장에 적힌 대로 참고용이라, 매장에서 재고와 가격을 다시 확인받으세요. 조립비는 보통 3~5만원이 따로 듭니다.</dd>
+      <dd>견적서 텍스트를 복사해 조립 업체나 매장에 보여주면 됩니다. 도장에 적힌 대로 참고용이라, 품목마다 붙은 「다나와 시세」 링크로 지금 가격을 확인하고 매장에서 재고를 다시 확인받으세요. 조립비는 보통 3~5만원이 따로 듭니다.</dd>
     </dl>
   </section>
 </main>
@@ -250,7 +281,7 @@
 <footer class="wrap site-foot">
   <p><strong>조립PC 견적기</strong></p>
   <p>표시 가격은 <span id="price-date-note">-</span>이며 실제 판매가와 다를 수 있습니다. 예상 FPS와 소비전력은 부품 등급으로 계산한 값입니다.
-     특정 판매처나 제조사와 제휴 관계가 없고, 부품을 팔거나 중개하지 않습니다.</p>
+     「다나와 시세」는 다나와 검색 결과로 연결되는 링크이며, 특정 판매처나 제조사와 제휴 관계가 없고 부품을 팔거나 중개하지 않습니다.</p>
 </footer>
 
 <!-- ===== 부품 교체 ===== -->

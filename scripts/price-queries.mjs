@@ -56,39 +56,41 @@ export const PRICE_QUERIES = {
   'mb-z890':        { q:'MSI Z890 토마호크 WIFI 메인보드',        qm:['Z890','토마호크'] },
   'mb-x870':        { q:'ASUS ROG STRIX X870-F 메인보드',         qm:['X870F'] },
 
-  /* --- 메모리 : 단품 가격을 받아 2개 구성으로 환산한다 --- */
+  /* --- 메모리 : 단품은 qn:2 로 두 개 값, 패키지는 그대로 --- */
   'ram-d4-16':      { q:'삼성전자 DDR4-3200 8GB',      qm:['DDR43200','8GB'],  qn:2 },
   'ram-d4-32':      { q:'삼성전자 DDR4-3200 16GB',     qm:['DDR43200','16GB'], qn:2 },
-  'ram-d5-16':      { q:'DDR5-5600 8GB 메모리',        qm:['DDR55600','8GB'],  qn:2 },
-  'ram-d5-32':      { q:'DDR5-5600 16GB 메모리',       qm:['DDR55600','16GB'], qn:2 },
-  'ram-d5-32-6000': { q:'DDR5-6000 16GB CL30 메모리',  qm:['DDR56000','16GB'], qn:2 },
-  'ram-d5-64':      { q:'DDR5-6000 32GB 메모리',       qm:['DDR56000','32GB'], qn:2 },
-  'ram-d5-96':      { q:'DDR5-6000 48GB 메모리',       qm:['DDR56000','48GB'], qn:2 },
+  'ram-d5-16':      { q:'삼성전자 DDR5-5600 8GB',      qm:['DDR55600','8GB'],  qn:2 },
+  'ram-d5-32':      { q:'삼성전자 DDR5-5600 16GB',     qm:['DDR55600','16GB'], qn:2 },
+  'ram-d5-32-6000': { q:'G.SKILL DDR5-6000 CL30 TRIDENT Z5 NEO RGB 32GB', qm:['TRIDENTZ5NEO','6000','32GB'] },
+  'ram-d5-64':      { q:'삼성전자 DDR5-5600 32GB',     qm:['DDR55600','32GB'], qn:2 },
+  'ram-d5-96':      { q:'마이크론 Crucial DDR5-5600 48GB', qm:['DDR55600','48GB'], qn:2 },
 
-  /* --- 저장장치 · 파워 · 케이스 · 쿨러 : 특정 제품이 아니라 등급 대표값이다.
-         특정 제품으로 고정하고 싶다면 q와 qm을 그 제품명으로 바꾸면 된다. --- */
-  'ssd-500':        { q:'M.2 NVMe SSD 500GB',          qm:['NVME','500GB'] },
-  'ssd-1t':         { q:'M.2 NVMe SSD 1TB',            qm:['NVME','1TB'] },
-  'ssd-1t-fast':    { q:'M.2 NVMe SSD 1TB 7000MB/s',   qm:['NVME','1TB'] },
-  'ssd-2t':         { q:'M.2 NVMe SSD 2TB',            qm:['NVME','2TB'] },
-  'ssd-4t':         { q:'M.2 NVMe SSD 4TB',            qm:['NVME','4TB'] },
+  /* --- 저장장치 --- */
+  'ssd-500':        { q:'SK하이닉스 Gold P31 500GB',   qm:['P31','500GB'] },
+  'ssd-1t':         { q:'WD Blue SN5000 1TB',          qm:['SN5000','1TB'] },
+  'ssd-1t-fast':    { q:'WD BLACK SN850X 1TB',         qm:['SN850X','1TB'] },
+  'ssd-2t':         { q:'삼성전자 990 EVO Plus 2TB',   qm:['990EVOPLUS','2TB'] },
+  'ssd-4t':         { q:'삼성전자 990 EVO Plus 4TB',   qm:['990EVOPLUS','4TB'] },
 
-  'psu-500b':       { q:'500W 파워서플라이 80PLUS 브론즈',       qm:['500W'] },
-  'psu-600b':       { q:'600W 파워서플라이 80PLUS 브론즈',       qm:['600W'] },
-  'psu-700b':       { q:'700W 파워서플라이 풀모듈러',            qm:['700W'] },
-  'psu-750g':       { q:'750W 파워서플라이 80PLUS 골드 풀모듈러',qm:['750W'] },
-  'psu-850g':       { q:'850W 파워서플라이 80PLUS 골드 ATX3.1',  qm:['850W'] },
-  'psu-1000g':      { q:'1000W 파워서플라이 80PLUS 골드 ATX3.1', qm:['1000W'] },
-  'psu-1200p':      { q:'1200W 파워서플라이 플래티넘',           qm:['1200W'] },
+  /* --- 파워 --- */
+  'psu-500b':       { q:'마이크로닉스 Classic II 풀체인지 500W', qm:['CLASSICII','500W'] },
+  'psu-600b':       { q:'마이크로닉스 Classic II 풀체인지 600W', qm:['CLASSICII','600W'] },
+  'psu-700b':       { q:'마이크로닉스 Classic II 풀체인지 700W', qm:['CLASSICII','700W'] },
+  'psu-750g':       { q:'마이크로닉스 ASTRO GD 750W 골드',       qm:['ASTROGD','750W'] },
+  'psu-850g':       { q:'마이크로닉스 ASTRO GD 850W 골드 ATX3.1',qm:['ASTROGD','850W'] },
+  'psu-1000g':      { q:'시소닉 FOCUS GX-1000 ATX3.1',          qm:['GX1000'] },
+  'psu-1200p':      { q:'시소닉 PRIME PX-1200 ATX3.1',          qm:['PX1200'] },
 
-  'case-mini':      { q:'미니타워 M-ATX 컴퓨터 케이스',     qm:['미니타워'] },
-  'case-mid':       { q:'미들타워 ATX 강화유리 케이스',     qm:['미들타워','강화유리'] },
-  'case-mesh':      { q:'미들타워 ATX 메쉬 쿨링 케이스',    qm:['미들타워','메쉬'] },
-  'case-big':       { q:'빅타워 ATX 컴퓨터 케이스',         qm:['빅타워'] },
+  /* --- 케이스 --- */
+  'case-mini':      { q:'darkFlash DLM21 MESH',        qm:['DLM21'] },
+  'case-mid':       { q:'darkFlash DLX21 RGB MESH',    qm:['DLX21'] },
+  'case-mesh':      { q:'리안리 LANCOOL 216',          qm:['LANCOOL216'] },
+  'case-big':       { q:'리안리 O11 DYNAMIC EVO XL',   qm:['O11','EVOXL'] },
 
-  'cool-slim':      { q:'CPU 쿨러 슬림 공랭 싱글팬',        qm:['CPU','쿨러'] },
-  'cool-tower':     { q:'CPU 쿨러 타워형 공랭 듀얼팬',      qm:['CPU','쿨러'] },
-  'cool-tower-p':   { q:'CPU 쿨러 듀얼타워 프리미엄 공랭',  qm:['CPU','쿨러'] },
-  'cool-aio240':    { q:'240mm 수랭 쿨러 일체형',           qm:['240'] },
-  'cool-aio360':    { q:'360mm 수랭 쿨러 일체형',           qm:['360'] }
+  /* --- 쿨러 --- */
+  'cool-slim':      { q:'DEEPCOOL AG400',                       qm:['AG400'], qx:['AG400D','DIGITAL'] },
+  'cool-tower':     { q:'써멀라이트 Peerless Assassin 120 SE',  qm:['PEERLESSASSASSIN120'] },
+  'cool-tower-p':   { q:'DEEPCOOL AK620 DIGITAL',               qm:['AK620','DIGITAL'] },
+  'cool-aio240':    { q:'ARCTIC Liquid Freezer III 240',        qm:['LIQUIDFREEZERIII','240'] },
+  'cool-aio360':    { q:'ARCTIC Liquid Freezer III 360',        qm:['LIQUIDFREEZERIII','360'] }
 };

@@ -16,9 +16,9 @@ const PURPOSES = [
     id:'game', label:'게임', desc:'FPS · 온라인 · 최신 게임',
     cpuGame:0.85, useRes:true, gpuMix:{ score:1, vram:0 },
     weights:{ cpu:20, gpu:46, ram:8, storage:7, board:7, psu:6, case:3, cooler:3 },
-    min:{ ram:16, storage:500, dgpu:true },
+    min:{ ram:16, storage:1000, dgpu:true },
     sweet:{ ram:32, storage:2000 },
-    share:{ cpu:0.42, gpu:0.75, board:0.20, ram:0.40, storage:0.16, psu:0.13, case:0.10, cooler:0.11 }
+    share:{ cpu:0.42, gpu:0.75, board:0.20, ram:0.40, storage:0.16, psu:0.13, case:0.07, cooler:0.06 }
   },
   {
     id:'office', label:'사무 · 학업', desc:'문서 · 웹 · 인강',
@@ -42,7 +42,7 @@ const PURPOSES = [
     weights:{ cpu:26, gpu:34, ram:14, storage:9, board:7, psu:5, case:2, cooler:3 },
     min:{ ram:32, storage:1000, dgpu:true },
     sweet:{ ram:32, storage:2000 },
-    share:{ cpu:0.42, gpu:0.68, board:0.20, ram:0.45, storage:0.20, psu:0.13, case:0.10, cooler:0.12 }
+    share:{ cpu:0.42, gpu:0.68, board:0.20, ram:0.45, storage:0.20, psu:0.13, case:0.08, cooler:0.07 }
   },
   {
     id:'ai', label:'AI · 딥러닝', desc:'로컬 LLM · 이미지 생성',
@@ -375,6 +375,8 @@ const Engine = (function () {
           if (!isValid(cand) || !brandOk(cand.cpu)) return;
           // 필요 용량의 1.5배를 넘게 파워를 올려도 체감이 없다 (교체 대상일 때만 판단)
           if (key === 'psu' && part.watt > power(cand).recommended * 1.5) return;
+          // 65W CPU에 듀얼타워 쿨러처럼, 발열의 3배를 넘는 냉각 용량도 체감이 없다
+          if (key === 'cooler' && part.tdpMax > Math.max(cand.cpu.tdp * 3, 150)) return;
           const price = totalPrice(cand);
           if (price > opts.budget || price <= curPrice) return;
           const score = rawScore(cand, purpose, opts);
@@ -501,13 +503,71 @@ const Engine = (function () {
 
       const result = blocked ? null : repair(Object.assign({}, build, { [key]:part }), key);
       return {
-        part, blocked,
+        key, part, blocked,
+        build: result ? result.build : null,
         current: part.id === build[key].id,
         changes: result ? result.changes : [],
         priceDiff: result ? totalPrice(result.build) - curPrice : 0,
         scoreDiff: result ? rawScore(result.build, purpose, opts) - curScore : 0
       };
     }).sort((a, b) => a.part.price - b.part.price);
+  }
+
+  /* ===== 더 보태면 · 줄이려면 =====
+   * 지금 견적에서 부품 하나를 바꿀 때 효과가 큰 순서로 고른다.
+   *   up   : 돈을 더 쓸 때 만원당 점수가 가장 많이 오르는 교체 (엔진이 예산 때문에 멈춘 다음 수)
+   *   down : 돈을 줄일 때 만원당 점수가 가장 덜 떨어지는 교체
+   * 사람들이 실제로 저울질하는 CPU · 그래픽카드 · 메모리 · SSD만 본다.
+   */
+  function meetsMinimum(build, purpose) {
+    const m = purpose.min;
+    if (build.ram.capacity < m.ram || build.storage.capacity < m.storage) return false;
+    if (m.dgpu && build.gpu.needsIgpu) return false;
+    if (m.vram && !build.gpu.needsIgpu && build.gpu.vram < m.vram) return false;
+    return true;
+  }
+
+  function alternatives(build, opts, dir, limit) {
+    const purpose = purposeOf(opts.purpose);
+    const cap = Math.max(300000, opts.budget * 0.25);
+    const picks = [];
+    ['gpu', 'cpu', 'ram', 'storage'].forEach(key => {
+      let best = null;
+      candidates(build, key, opts).forEach(c => {
+        if (c.blocked || c.current || !meetsMinimum(c.build, purpose)) return;
+        if (dir === 'up') {
+          if (c.priceDiff < 10000 || c.priceDiff > cap || c.scoreDiff <= 0) return;
+          c.rate = c.scoreDiff / c.priceDiff;
+          if (!best || c.rate > best.rate) best = c;
+        } else {
+          if (c.priceDiff > -20000) return;
+          c.rate = Math.max(0, -c.scoreDiff) / -c.priceDiff;
+          if (!best || c.rate < best.rate) best = c;
+        }
+      });
+      if (best) picks.push(best);
+    });
+
+    // 게임 · 방송 용도는 프레임 변화를 먼저 본다 (프레임이 안 바뀌는 교체는 그다음)
+    picks.forEach(c => { c.fps = purpose.useRes ? fpsChange(build, c.build, opts.res) : 0; });
+    const moves = c => Math.abs(c.fps) > 0.01;
+    picks.sort((a, b) => {
+      if (purpose.useRes && moves(a) !== moves(b)) return dir === 'up' ? (moves(a) ? -1 : 1) : (moves(a) ? 1 : -1);
+      if (purpose.useRes && moves(a)) {
+        return dir === 'up'
+          ? b.fps / b.priceDiff - a.fps / a.priceDiff        // 만원당 프레임 상승이 큰 순서
+          : a.fps / a.priceDiff - b.fps / b.priceDiff;       // 아끼는 돈에 비해 프레임 손해가 적은 순서
+      }
+      return dir === 'up' ? b.rate - a.rate : a.rate - b.rate;
+    });
+    return picks.slice(0, limit || 3);
+  }
+
+  /* 두 구성의 게임별 예상 프레임 변화율 평균 (+0.12 = 평균 12% 상승) */
+  function fpsChange(from, to, resId) {
+    const a = fpsEstimate(from, resId);
+    const b = fpsEstimate(to, resId);
+    return a.reduce((sum, g, i) => sum + b[i].fps / g.fps, 0) / a.length - 1;
   }
 
   /* ===== 부품 스펙 한 줄 요약 ===== */
@@ -542,6 +602,6 @@ const Engine = (function () {
   return {
     purposeOf, resolutionOf, find, totalPrice, power, compatibility, isValid,
     scoreBuild, rawScore, repair, recommend, baseline, fpsEstimate, bottleneck,
-    candidates, specText, tierLabel
+    candidates, alternatives, fpsChange, specText, tierLabel
   };
 })();
