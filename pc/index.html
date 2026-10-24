@@ -24,8 +24,8 @@
     <a href="#top" class="brand"><span class="brand-seal" aria-hidden="true">견</span>조립PC 견적기</a>
     <button type="button" class="menu-btn" aria-expanded="false" aria-controls="site-nav">메뉴</button>
     <nav class="site-nav" id="site-nav" aria-label="바로가기">
-      <a href="#quote">견적서</a>
-      <a href="#annex">별첨</a>
+      <a href="#quote" class="nav-quote">견적서</a>
+      <a href="#annex" class="nav-quote">별첨</a>
       <a href="#guide">고르는 법</a>
       <a href="#faq">묻고 답하기</a>
     </nav>
@@ -35,7 +35,27 @@
 <main id="top">
   <h1 class="sr-only">조립PC 견적기</h1>
 
-  <div class="wrap bench">
+  <!-- ===== 견적 의뢰 : 처음 들어오면 하나씩 묻는다 ===== -->
+  <section class="wrap intake" id="intake" aria-labelledby="intake-q" hidden>
+    <div class="sheet intake-card">
+      <div class="intake-top">
+        <span class="intake-label">견적 의뢰</span>
+        <span class="intake-count num" id="intake-count"></span>
+      </div>
+      <ol class="intake-progress" id="intake-progress" aria-hidden="true"></ol>
+      <p class="intake-recap" id="intake-recap"></p>
+
+      <h2 class="intake-q" id="intake-q" tabindex="-1"></h2>
+      <p class="intake-hint" id="intake-hint"></p>
+      <div class="intake-body" id="intake-body"></div>
+
+      <div class="intake-nav">
+        <button type="button" class="intake-back" id="intake-back">이전 질문</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap bench" id="bench">
 
     <!-- ===== 견적 조건 ===== -->
     <aside class="conditions" id="conditions" data-open="false" aria-labelledby="cond-title">
@@ -158,7 +178,7 @@
         <button type="button" id="copy-btn">견적서 텍스트 복사</button>
         <button type="button" id="share-btn">이 견적 링크 복사</button>
         <button type="button" id="print-btn">인쇄 · PDF</button>
-        <button type="button" id="reset-btn">기본 조건으로</button>
+        <button type="button" id="reset-btn">처음부터 다시</button>
       </div>
 
       <section class="tweaks" id="tweaks" aria-labelledby="tweaks-title">

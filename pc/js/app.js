@@ -87,6 +87,147 @@ function copyText(text, okMsg) {
   }
 }
 
+/* ===== 견적 의뢰 : 처음 들어온 사람에게 하나씩 묻는다 ===== */
+const INTAKE_RES_DESC = {
+  fhd60:  '1920×1080 · 사무용 모니터에 흔한 사양',
+  fhd144: '1920×1080 · 게이밍 입문',
+  fhd240: '1920×1080 · 발로란트 · 배그 같은 경쟁 게임',
+  qhd144: '2560×1440 · 요즘 가장 많이 쓰는 게이밍 모니터',
+  uhd:    '3840×2160 · 고화질 싱글 게임'
+};
+const INTAKE_BRAND_DESC = {
+  any:   '같은 돈이면 더 빠른 쪽으로',
+  amd:   '라이젠 · 게임은 X3D 모델이 강점',
+  intel: '코어 · 작업용은 코어 수가 강점'
+};
+
+const intake = { step: 0, answered: new Set(), busy: false };
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* 모니터는 게임 · 방송 용도에서만 묻는다 */
+function intakeSteps() {
+  const useRes = !intake.answered.has('purpose') || Engine.purposeOf(state.purpose).useRes;
+  return useRes ? ['purpose', 'budget', 'res', 'brand'] : ['purpose', 'budget', 'brand'];
+}
+
+function setMode(mode) {
+  const asking = mode === 'intake';
+  el('intake').hidden = !asking;
+  el('bench').hidden = asking;
+  el('annex').hidden = asking;
+  document.querySelectorAll('.nav-quote').forEach(a => { a.hidden = asking; });
+}
+
+/* 예산 버튼마다 "그 돈이면 어느 급이 들어가는지"를 실제로 계산해 보여준다 */
+function budgetPreview(budget) {
+  const r = Engine.recommend({
+    purpose: state.purpose, budget,
+    res: intake.answered.has('res') ? state.res : 'qhd144',
+    brand: intake.answered.has('brand') ? state.brand : 'any'
+  });
+  if (!r || r.overBudget) return null;
+  const b = r.build;
+  switch (state.purpose) {
+    case 'office':  return b.cpu.short + (b.gpu.needsIgpu ? ' · 내장그래픽' : ' · ' + b.gpu.short);
+    case 'creator': return `${b.cpu.short} · ${b.gpu.short}`;
+    case 'ai':      return `${b.gpu.short} · VRAM ${b.gpu.vram}GB`;
+    default:        return `${b.gpu.short}급`;
+  }
+}
+
+function intakeChoice(value, name, desc, pressed, descClass) {
+  return `<button type="button" class="intake-choice" data-value="${value}" aria-pressed="${pressed}">
+      <span class="ic-name">${name}</span><span class="ic-desc${descClass ? ' ' + descClass : ''}">${desc}</span>
+    </button>`;
+}
+
+function renderIntake() {
+  const steps = intakeSteps();
+  const key = steps[intake.step];
+  const purpose = Engine.purposeOf(state.purpose);
+  const was = k => intake.answered.has(k);
+  const answerText = {
+    purpose: purpose.label,
+    budget: manwon(state.budget),
+    res: Engine.resolutionOf(state.res).label,
+    brand: BRANDS.find(b => b.id === state.brand).summary
+  };
+
+  intake.busy = false;
+  el('intake-count').textContent = `${intake.step + 1} / ${steps.length}`;
+  el('intake-progress').innerHTML = steps.map((s, i) =>
+    `<li class="${i < intake.step ? 'done' : i === intake.step ? 'now' : ''}"></li>`).join('');
+  el('intake-recap').textContent = steps.slice(0, intake.step).map(k => answerText[k]).join(' · ');
+  el('intake-back').hidden = intake.step === 0;
+
+  let q, hint, body;
+  if (key === 'purpose') {
+    q = '어디에 쓰실 PC인가요?';
+    hint = '용도에 따라 돈을 더 쓸 부품이 달라집니다.';
+    body = `<div class="intake-grid">${PURPOSES.map(p =>
+      intakeChoice(p.id, p.label, p.desc, was('purpose') && state.purpose === p.id)).join('')}</div>`;
+  } else if (key === 'budget') {
+    const min = Engine.recommend({ purpose: state.purpose, budget: 1, res: 'qhd144', brand: 'any' }).minPrice;
+    q = '예산은 얼마인가요?';
+    hint = `본체만 계산합니다. 모니터 · 키보드 · 마우스는 빼고 생각하세요. ` +
+      `${purpose.label}용은 ${manwon(Math.ceil(min / 10000) * 10000)}부터 견적이 나옵니다.`;
+    body = `<div class="intake-grid budget">${BUDGET_PRESETS.map(v => {
+        const pv = budgetPreview(v);
+        return intakeChoice(v, `<span class="num">${num(v / 10000)}</span>만원`,
+          pv || '최소 구성보다 적음', was('budget') && state.budget === v, pv ? '' : 'is-short');
+      }).join('')}</div>
+      <div class="intake-custom">
+        <label for="intake-range">직접 정하기</label>
+        <input type="range" id="intake-range" min="1000000" max="14000000" step="100000" value="${state.budget}">
+        <output id="intake-out" for="intake-range">${manwon(state.budget)}</output>
+        <button type="button" class="intake-go" id="intake-go">이 금액으로</button>
+      </div>`;
+  } else if (key === 'res') {
+    q = '어떤 모니터에서 쓰시나요?';
+    hint = '해상도와 주사율에 따라 CPU와 그래픽카드에 나눌 돈이 달라집니다. 아직 없다면 QHD 144Hz를 고르세요.';
+    body = `<div class="intake-grid">${RESOLUTIONS.map(r =>
+      intakeChoice(r.id, r.label, INTAKE_RES_DESC[r.id], was('res') && state.res === r.id)).join('')}</div>`;
+  } else {
+    q = 'CPU 제조사는 어떻게 할까요?';
+    hint = '특별히 원하는 쪽이 없으면 상관없음을 고르세요. 마지막 질문입니다.';
+    body = `<div class="intake-grid">${BRANDS.map(b =>
+      intakeChoice(b.id, b.label, INTAKE_BRAND_DESC[b.id], was('brand') && state.brand === b.id)).join('')}</div>`;
+  }
+  el('intake-q').textContent = q;
+  el('intake-hint').textContent = hint;
+  el('intake-body').innerHTML = body;
+  el('intake-body').dataset.step = key;
+}
+
+function answerIntake(key, value) {
+  if (key === 'budget') state.budget = Number(value);
+  else state[key] = value;
+  intake.answered.add(key);
+  if (intake.step + 1 >= intakeSteps().length) {
+    finishIntake();
+    return;
+  }
+  intake.step += 1;
+  renderIntake();
+  el('intake-q').focus({ preventScroll: true });
+}
+
+function finishIntake() {
+  setMode('quote');
+  syncConditions();
+  generate(false);
+  window.scrollTo(0, 0);
+}
+
+function startIntake() {
+  Object.assign(state, DEFAULTS);
+  intake.step = 0;
+  intake.answered.clear();
+  setMode('intake');
+  renderIntake();
+  window.scrollTo(0, 0);
+}
+
 /* ===== 견적 조건 ===== */
 function choice(name, id, value, title, desc) {
   return `<label class="choice" for="${id}">
@@ -436,9 +577,40 @@ document.addEventListener('DOMContentLoaded', () => {
   el('faq-price-date').textContent = PRICE_INFO.note;
   el('price-basis-short').textContent = PRICE_INFO.live ? PRICE_INFO.note : `${PRICE_BASE_DATE} 조사 시세`;
 
+  // 저장된 견적이나 공유 링크가 있으면 견적서로, 처음 들어온 사람은 질문부터
   const restored = loadInitial();
   renderConditions();
-  if (restored) render(); else generate(false);
+  if (restored) {
+    setMode('quote');
+    render();
+  } else {
+    startIntake();
+  }
+
+  // 견적 의뢰 : 고르면 체크 표시를 잠깐 보여주고 다음 질문으로
+  el('intake-body').addEventListener('click', e => {
+    if (intake.busy) return;
+    const btn = e.target.closest('.intake-choice');
+    if (btn) {
+      intake.busy = true;
+      el('intake-body').querySelectorAll('.intake-choice').forEach(b => b.setAttribute('aria-pressed', b === btn));
+      const key = el('intake-body').dataset.step;
+      setTimeout(() => answerIntake(key, btn.dataset.value), reduceMotion ? 0 : 180);
+    } else if (e.target.closest('#intake-go')) {
+      intake.busy = true;
+      answerIntake('budget', el('intake-range').value);
+    }
+  });
+  el('intake-body').addEventListener('input', e => {
+    if (e.target.id !== 'intake-range') return;
+    el('intake-out').textContent = manwon(Number(e.target.value));
+    el('intake-body').querySelectorAll('.intake-choice').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  });
+  el('intake-back').addEventListener('click', () => {
+    intake.step = Math.max(0, intake.step - 1);
+    renderIntake();
+    el('intake-q').focus({ preventScroll: true });
+  });
 
   // 조건이 바뀌면 바로 다시 계산
   const regenerate = () => generate(sheetOffscreen());
@@ -509,12 +681,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   el('print-btn').addEventListener('click', () => window.print());
   el('reset-btn').addEventListener('click', () => {
-    Object.assign(state, DEFAULTS);
     history.replaceState(null, '', location.pathname);
     try { localStorage.removeItem(STORE_KEY); } catch (e) { /* 무시 */ }
+    startIntake();
     syncConditions();
-    generate(false);
-    toast('기본 조건으로 다시 계산했습니다');
   });
 
   // 휴대폰 메뉴
