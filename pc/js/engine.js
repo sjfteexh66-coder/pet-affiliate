@@ -13,7 +13,7 @@
  */
 const PURPOSES = [
   {
-    id:'game', label:'게임', icon:'🎮', desc:'FPS · AAA 게임 중심',
+    id:'game', label:'게임', desc:'FPS · 온라인 · 최신 게임',
     cpuGame:0.85, useRes:true, gpuMix:{ score:1, vram:0 },
     weights:{ cpu:20, gpu:46, ram:8, storage:7, board:7, psu:6, case:3, cooler:3 },
     min:{ ram:16, storage:500, dgpu:true },
@@ -21,7 +21,7 @@ const PURPOSES = [
     share:{ cpu:0.42, gpu:0.75, board:0.20, ram:0.40, storage:0.16, psu:0.13, case:0.10, cooler:0.11 }
   },
   {
-    id:'office', label:'사무 · 학업', icon:'💼', desc:'문서 · 웹 · 인터넷 강의',
+    id:'office', label:'사무 · 학업', desc:'문서 · 웹 · 인강',
     cpuGame:0.3, useRes:false, gpuMix:{ score:1, vram:0 },
     weights:{ cpu:30, gpu:3, ram:16, storage:22, board:10, psu:7, case:5, cooler:4 },
     min:{ ram:16, storage:500, dgpu:false },
@@ -29,7 +29,7 @@ const PURPOSES = [
     share:{ cpu:0.45, gpu:0.12, board:0.22, ram:0.45, storage:0.28, psu:0.15, case:0.14, cooler:0.12 }
   },
   {
-    id:'creator', label:'영상편집 · 디자인', icon:'🎬', desc:'프리미어 · 포토샵 · 3D',
+    id:'creator', label:'영상편집 · 디자인', desc:'프리미어 · 포토샵 · 3D',
     cpuGame:0.2, useRes:false, gpuMix:{ score:0.8, vram:1.2 },
     weights:{ cpu:28, gpu:22, ram:18, storage:16, board:7, psu:4, case:2, cooler:3 },
     min:{ ram:32, storage:1000, dgpu:true },
@@ -37,7 +37,7 @@ const PURPOSES = [
     share:{ cpu:0.45, gpu:0.55, board:0.18, ram:0.50, storage:0.26, psu:0.12, case:0.09, cooler:0.12 }
   },
   {
-    id:'stream', label:'게임방송 · 스트리밍', icon:'📡', desc:'게임 + 인코딩 동시 처리',
+    id:'stream', label:'게임 방송', desc:'게임하면서 송출까지',
     cpuGame:0.55, useRes:true, gpuMix:{ score:1, vram:0 },
     weights:{ cpu:26, gpu:34, ram:14, storage:9, board:7, psu:5, case:2, cooler:3 },
     min:{ ram:32, storage:1000, dgpu:true },
@@ -45,7 +45,7 @@ const PURPOSES = [
     share:{ cpu:0.42, gpu:0.68, board:0.20, ram:0.45, storage:0.20, psu:0.13, case:0.10, cooler:0.12 }
   },
   {
-    id:'ai', label:'AI · 딥러닝', icon:'🤖', desc:'로컬 LLM · 이미지 생성',
+    id:'ai', label:'AI · 딥러닝', desc:'로컬 LLM · 이미지 생성',
     cpuGame:0.15, useRes:false, gpuMix:{ score:0.5, vram:2.5 },
     weights:{ cpu:16, gpu:46, ram:16, storage:12, board:4, psu:3, case:1, cooler:2 },
     min:{ ram:32, storage:1000, dgpu:true, vram:12 },
@@ -62,9 +62,9 @@ const PURPOSES = [
 const RESOLUTIONS = [
   { id:'fhd60',  label:'FHD 60Hz',   sub:'1920×1080 일반', cpuMul:1.00, gpuMul:1.00, bnMul:1.00, vram:6  },
   { id:'fhd144', label:'FHD 144Hz',  sub:'1920×1080 고주사율', cpuMul:1.15, gpuMul:0.95, bnMul:0.90, vram:8  },
-  { id:'fhd240', label:'FHD 240Hz',  sub:'경쟁 게임 특화', cpuMul:1.35, gpuMul:0.90, bnMul:0.80, vram:8  },
-  { id:'qhd144', label:'QHD 144Hz',  sub:'2560×1440 대중적', cpuMul:1.00, gpuMul:1.10, bnMul:1.15, vram:10 },
-  { id:'uhd',    label:'4K UHD',     sub:'3840×2160 고화질', cpuMul:0.75, gpuMul:1.25, bnMul:1.40, vram:12 }
+  { id:'fhd240', label:'FHD 240Hz',  sub:'경쟁 게임용', cpuMul:1.35, gpuMul:0.90, bnMul:0.80, vram:8  },
+  { id:'qhd144', label:'QHD 144Hz',  sub:'2560×1440', cpuMul:1.00, gpuMul:1.10, bnMul:1.15, vram:10 },
+  { id:'uhd',    label:'4K UHD',     sub:'3840×2160', cpuMul:0.75, gpuMul:1.25, bnMul:1.40, vram:12 }
 ];
 
 /* 단종된 소켓은 CPU 업그레이드 경로가 없어 확장성 감점을 준다.
@@ -105,73 +105,75 @@ const Engine = (function () {
 
     // CPU ↔ 메인보드 소켓
     cpu.socket === board.socket
-      ? add('ok', 'CPU · 메인보드 소켓', `${cpu.socket} 소켓 일치`)
-      : add('error', 'CPU · 메인보드 소켓 불일치', `CPU는 ${cpu.socket}, 메인보드는 ${board.socket} 입니다.`);
+      ? add('ok', 'CPU 소켓', `${cpu.socket} — 메인보드와 일치`)
+      : add('error', 'CPU 소켓', `CPU는 ${cpu.socket}, 메인보드는 ${board.socket}이라 꽂히지 않습니다.`);
 
     // 메모리 규격
     if (!cpu.mem.includes(board.mem)) {
-      add('error', '메모리 규격 불일치', `${cpu.name}은(는) ${cpu.mem.join('/')}만 지원합니다.`);
+      add('error', '메모리 규격', `${cpu.name}은(는) ${cpu.mem.join('/')}만 지원합니다.`);
     } else if (ram.type !== board.mem) {
-      add('error', '메모리 규격 불일치', `메인보드는 ${board.mem} 전용인데 메모리는 ${ram.type} 입니다.`);
+      add('error', '메모리 규격', `메인보드는 ${board.mem}용인데 메모리는 ${ram.type}입니다.`);
     } else {
-      add('ok', '메모리 규격', `${ram.type} · 메인보드 슬롯 ${board.slots}개 중 ${ram.sticks}개 사용`);
+      add('ok', '메모리 규격', `${ram.type} — 슬롯 ${board.slots}개 중 ${ram.sticks}개 사용`);
     }
 
-    // 화면 출력 (내장그래픽 사용 시)
-    if (gpu.needsIgpu && !cpu.igpu) {
-      add('error', '화면 출력 불가', `${cpu.name}에는 내장그래픽이 없어 그래픽카드가 반드시 필요합니다.`);
+    // 화면 출력
+    if (gpu.needsIgpu) {
+      cpu.igpu
+        ? add('ok', '화면 출력', 'CPU 내장그래픽으로 출력')
+        : add('error', '화면 출력', `${cpu.name}은(는) 내장그래픽이 없어 그래픽카드가 있어야 합니다.`);
     }
 
     // 쿨러
     if (cooler.needsBundled && !cpu.bundled) {
-      add('error', '번들 쿨러 없음', `${cpu.name}은(는) 쿨러가 포함되지 않은 제품입니다.`);
+      add('error', '쿨러', `${cpu.name}에는 기본 쿨러가 들어 있지 않습니다.`);
     } else if (cooler.tdpMax < cpu.tdp) {
-      add('warn', '쿨러 성능 부족', `CPU 발열 ${cpu.tdp}W > 쿨러 감당 ${cooler.tdpMax}W. 온도·소음이 올라갑니다.`);
+      add('warn', '쿨러', `CPU 발열 ${cpu.tdp}W를 ${cooler.tdpMax}W급 쿨러로 식혀야 해서 온도와 소음이 올라갑니다.`);
     } else {
-      add('ok', '쿨러 성능', `${cooler.type} · ${cooler.tdpMax}W 급 (CPU ${cpu.tdp}W)`);
+      add('ok', '쿨러', `${cooler.type} ${cooler.tdpMax}W급 — CPU ${cpu.tdp}W`);
     }
 
     // 케이스 ↔ 메인보드 / 그래픽카드 / 쿨러
     pcase.forms.includes(board.form)
-      ? add('ok', '케이스 · 메인보드 규격', `${board.form} 장착 가능`)
-      : add('error', '케이스 규격 불일치', `${board.form} 메인보드를 지원하지 않는 케이스입니다.`);
+      ? add('ok', '케이스 규격', `${board.form} 메인보드 장착 가능`)
+      : add('error', '케이스 규격', `이 케이스에는 ${board.form} 메인보드가 들어가지 않습니다.`);
 
     if (!gpu.needsIgpu) {
       gpu.length <= pcase.maxGpu
-        ? add('ok', '그래픽카드 길이', `${gpu.length}mm / 케이스 허용 ${pcase.maxGpu}mm`)
-        : add('error', '그래픽카드가 케이스에 들어가지 않음', `카드 ${gpu.length}mm > 허용 ${pcase.maxGpu}mm`);
+        ? add('ok', '그래픽카드 길이', `${gpu.length}mm — 케이스 허용 ${pcase.maxGpu}mm`)
+        : add('error', '그래픽카드 길이', `카드 ${gpu.length}mm가 케이스 허용치 ${pcase.maxGpu}mm보다 깁니다.`);
     }
 
     if (cooler.type === '수랭') {
       cooler.rad <= pcase.rad
-        ? add('ok', '수랭 라디에이터', `${cooler.rad}mm / 케이스 지원 ${pcase.rad}mm`)
-        : add('error', '라디에이터 장착 불가', `${cooler.rad}mm 라디에이터를 지원하지 않는 케이스입니다.`);
+        ? add('ok', '라디에이터', `${cooler.rad}mm — 케이스 지원 ${pcase.rad}mm`)
+        : add('error', '라디에이터', `케이스가 ${cooler.rad}mm 라디에이터를 지원하지 않습니다.`);
     } else if (cooler.height > 0) {
       cooler.height <= pcase.maxCooler
-        ? add('ok', '쿨러 높이', `${cooler.height}mm / 케이스 허용 ${pcase.maxCooler}mm`)
-        : add('error', '쿨러 높이 초과', `쿨러 ${cooler.height}mm > 허용 ${pcase.maxCooler}mm`);
+        ? add('ok', '쿨러 높이', `${cooler.height}mm — 케이스 허용 ${pcase.maxCooler}mm`)
+        : add('error', '쿨러 높이', `쿨러 ${cooler.height}mm가 케이스 허용치 ${pcase.maxCooler}mm보다 높습니다.`);
     }
 
     // 파워
     if (psu.watt >= pw.recommended) {
-      add('ok', '파워 용량', `${psu.watt}W (예상 최대 ${pw.peak}W · 권장 ${pw.recommended}W)`);
+      add('ok', '파워 용량', `${psu.watt}W — 최대 ${pw.peak}W, 권장 ${pw.recommended}W`);
     } else if (psu.watt >= pw.peak) {
-      add('warn', '파워 여유 부족', `${psu.watt}W로 동작은 하지만 권장 ${pw.recommended}W 이상을 추천합니다.`);
+      add('warn', '파워 용량', `${psu.watt}W로 돌아가기는 하지만 여유가 적습니다. ${pw.recommended}W 이상을 권합니다.`);
     } else {
-      add('error', '파워 용량 부족', `예상 최대 소비전력 ${pw.peak}W > 파워 ${psu.watt}W`);
+      add('error', '파워 용량', `최대 소비전력 ${pw.peak}W가 파워 ${psu.watt}W보다 큽니다.`);
     }
 
-    // VRAM (게임·방송 용도에서 해상도 대비)
+    // VRAM (게임 · 방송 용도에서 해상도 대비)
     if (purpose.useRes && !gpu.needsIgpu && gpu.vram < res.vram) {
-      add('warn', 'VRAM 부족 가능', `${res.label} 환경에서는 ${res.vram}GB 이상을 권장합니다 (현재 ${gpu.vram}GB).`);
+      add('warn', 'VRAM', `${res.label}에서는 ${res.vram}GB 이상이 좋습니다. 지금은 ${gpu.vram}GB입니다.`);
     }
 
     // 메모리 용량
     if (ram.capacity < purpose.min.ram) {
-      add('warn', '메모리 용량 부족', `${purpose.label} 용도에는 ${purpose.min.ram}GB 이상을 권장합니다.`);
+      add('warn', '메모리 용량', `${purpose.label} 용도라면 ${purpose.min.ram}GB 이상을 권합니다.`);
     }
     if (purpose.min.vram && !gpu.needsIgpu && gpu.vram < purpose.min.vram) {
-      add('warn', 'VRAM 용량 부족', `${purpose.label} 용도에는 VRAM ${purpose.min.vram}GB 이상을 권장합니다.`);
+      add('warn', 'VRAM', `${purpose.label} 용도라면 VRAM ${purpose.min.vram}GB 이상을 권합니다.`);
     }
 
     return {
@@ -442,41 +444,40 @@ const Engine = (function () {
     const purpose = purposeOf(opts.purpose);
 
     if (build.gpu.needsIgpu) {
-      return { level:'info', label:'내장 그래픽 구성',
-        detail:'문서 · 웹 · 영상 시청에는 충분합니다. 게임을 할 계획이라면 그래픽카드를 추가하세요.' };
+      return { level:'info', label:'내장그래픽',
+        detail:'문서 · 웹 · 영상 시청에는 충분합니다. 게임을 하려면 그래픽카드를 넣으세요.' };
     }
 
-    // AI 용도는 VRAM 용량이 구동 가능한 모델 크기를 결정한다
+    // AI 용도는 VRAM 용량이 올릴 수 있는 모델 크기를 정한다
     if (purpose.id === 'ai') {
       const v = build.gpu.vram;
-      const detail = v >= 32 ? '32B급 모델까지 4비트 양자화로 여유롭게 구동할 수 있습니다.'
-        : v >= 24 ? '32B급 모델을 4비트로 올릴 수 있는 용량입니다.'
-        : v >= 16 ? '14B급 모델까지 4비트로 구동하기 좋은 용량입니다.'
-        : v >= 12 ? '8B급 모델과 이미지 생성에 적합한 용량입니다.'
-        : '3~8B급 소형 모델 위주로 쓰게 됩니다. VRAM을 늘리는 편이 좋습니다.';
-      return { level: v >= 16 ? 'ok' : 'warn', label:`VRAM ${v}GB 구성`, detail };
+      const detail = v >= 32 ? '32B급 모델까지 4비트 양자화로 여유 있게 돌릴 수 있습니다.'
+        : v >= 24 ? '32B급 모델을 4비트로 올릴 수 있습니다.'
+        : v >= 16 ? '14B급 모델까지 4비트로 돌리기 좋습니다.'
+        : v >= 12 ? '8B급 모델과 이미지 생성에 맞는 용량입니다.'
+        : '3~8B급 작은 모델 위주가 됩니다. VRAM을 늘리는 편이 좋습니다.';
+      return { level: v >= 16 ? 'ok' : 'warn', label:`VRAM ${v}GB`, detail };
     }
 
-    // 영상편집 · 사무 용도는 게임 프레임이 아니라 작업 성향으로 판단한다
+    // 영상편집 · 사무 용도는 게임 프레임이 아니라 작업 성향으로 본다
     if (!purpose.useRes) {
       const r = build.gpu.score / (build.cpu.workScore * 1.4);
-      if (r > 1.25) return { level:'info', label:'그래픽카드 위주 구성',
-        detail:'3D 렌더링 · AI 보정에 유리합니다. 인코딩과 다중 작업이 많다면 CPU를 올리세요.' };
-      if (r < 0.75) return { level:'info', label:'CPU 위주 구성',
-        detail:'영상 인코딩 · 다중 트랙 편집에 유리합니다. 3D · 이펙트 작업이 많다면 그래픽카드를 올리세요.' };
-      return { level:'ok', label:'균형 잡힌 작업용 구성', detail:'CPU와 그래픽카드 성능이 고르게 맞춰져 있습니다.' };
+      if (r > 1.25) return { level:'info', label:'그래픽카드 쪽',
+        detail:'3D 렌더링과 AI 보정에 유리합니다. 인코딩 · 다중 작업이 많으면 CPU를 올리세요.' };
+      if (r < 0.75) return { level:'info', label:'CPU 쪽',
+        detail:'인코딩과 다중 트랙 편집에 유리합니다. 3D · 이펙트가 많으면 그래픽카드를 올리세요.' };
+      return { level:'ok', label:'고르게 배분', detail:'CPU와 그래픽카드에 예산이 고르게 들어갔습니다.' };
     }
 
-    // 게임 · 방송 용도는 실제 예상 프레임에서 손해 보는 정도로 판정한다
+    // 게임 · 방송 용도는 예상 프레임에서 손해 보는 정도로 판정한다
     const res = resolutionOf(opts.res);
     const bal = frameBalance(build, opts.res);
-    if (bal.waste > 0.15) return { level:'warn', label:'CPU 병목 가능성',
-      detail:`${res.label} 기준으로 그래픽카드 성능의 약 ${Math.round(bal.waste * 100)}%를 CPU가 못 받쳐줍니다. `
-        + 'CPU를 한 단계 올리면 체감이 큽니다.' };
-    if (bal.spare > 0.45) return { level:'warn', label:'그래픽카드 여유 부족',
-      detail:'CPU 성능이 남습니다. 예산을 그래픽카드에 더 쓰면 프레임이 크게 올라갑니다.' };
-    return { level:'ok', label:'균형 잡힌 구성',
-      detail:`CPU와 그래픽카드의 급이 ${res.label} 환경에 잘 맞습니다.` };
+    if (bal.waste > 0.15) return { level:'warn', label:'CPU 부족',
+      detail:`${res.label}에서 그래픽카드가 낼 수 있는 프레임의 약 ${Math.round(bal.waste * 100)}%를 CPU가 못 따라갑니다. CPU를 한 단계 올리는 쪽이 효과가 큽니다.` };
+    if (bal.spare > 0.45) return { level:'warn', label:'그래픽카드 부족',
+      detail:'CPU가 남습니다. 같은 돈이면 그래픽카드에 더 쓰는 편이 프레임이 오릅니다.' };
+    return { level:'ok', label:'균형 맞음',
+      detail:`CPU와 그래픽카드 급이 맞습니다. ${res.label}에서 그래픽카드 성능을 거의 다 씁니다.` };
   }
 
   /* ===== 부품 교체 후보 목록 ===== */

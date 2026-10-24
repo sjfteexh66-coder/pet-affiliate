@@ -1,10 +1,14 @@
 /* ===== PC Parts Database =====
- * price : 원 단위. 2026년 9월 국내 온라인 유통가 기준 "참고용 추정치".
+ * price : 원 단위. 2026년 9월 국내 유통가 조사값.
+ *         CPU · 그래픽카드 · 메모리 · SSD 주요 품목은 가격비교 사이트 최저가를 확인해 넣었고,
+ *         메인보드 · 파워 · 케이스 · 쿨러는 등급 기준 추정치다.
+ *         2025~2026년 D램 · 낸드 공급 부족으로 메모리와 저장장치 가격이 크게 올라 있으므로
+ *         구매 전 실제 시세를 다시 확인할 것.
  *         시세가 바뀌면 이 파일의 price 값만 수정하면 견적 전체에 반영된다.
  * score : 같은 카테고리 안에서만 의미가 있는 상대 성능/등급 지수 (0~100+).
  * CPU만 gameScore(게임) / workScore(다중작업) 두 축으로 평가한다.
  */
-const PRICE_BASE_DATE = '2026년 9월';   // 자동 수집 전까지 쓰이는 추정 가격의 기준 시점
+const PRICE_BASE_DATE = '2026년 9월';   // 자동 수집 전까지 쓰이는 조사 가격의 기준 시점
 
 const PARTS = {
 
@@ -110,14 +114,14 @@ const PARTS = {
 
 /* ===== 카테고리 표시 정보 (견적표 출력 순서) ===== */
 const CATEGORIES = [
-  { key:'cpu',     label:'CPU',        icon:'🧠' },
-  { key:'cooler',  label:'CPU 쿨러',   icon:'❄️' },
-  { key:'board',   label:'메인보드',   icon:'🔌' },
-  { key:'ram',     label:'메모리',     icon:'📊' },
-  { key:'gpu',     label:'그래픽카드', icon:'🎮' },
-  { key:'storage', label:'SSD',        icon:'💾' },
-  { key:'psu',     label:'파워',       icon:'⚡' },
-  { key:'case',    label:'케이스',     icon:'🗄️' }
+  { key:'cpu',     label:'CPU' },
+  { key:'cooler',  label:'CPU 쿨러' },
+  { key:'board',   label:'메인보드' },
+  { key:'ram',     label:'메모리' },
+  { key:'gpu',     label:'그래픽카드' },
+  { key:'storage', label:'SSD' },
+  { key:'psu',     label:'파워' },
+  { key:'case',    label:'케이스' }
 ];
 
 /* ===== 예상 FPS 산출용 게임 목록 =====
